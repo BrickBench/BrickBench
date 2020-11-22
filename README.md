@@ -22,10 +22,11 @@ You can adjust various settings such as sensitivity and your default home direct
 * Ctrl-G to go to a specific position
 
 ## Current Bugs
-* Some triangles missing on collision mesh and display mesh
-* Material and shading pipeline improperly emulated resulting in mistexturing and other oddities
-* Mouse sometime snaps out of place
-* Infinite walls are missing pieces
-* Some collision meshes some do not have the correct rotation applied
+* Some triangles missing on collision mesh and display mesh.
+* Material and shading pipeline improperly emulated resulting in mistexturing and other oddities.
+* Mouse sometime snaps out of place.
+* Infinite walls are missing pieces.
+* Some collision meshes some do not have the correct rotation applied.
+* Intel integrated GPUs have alot of issues and may not run correctly.
 
 To report bugs, add an issue to this repository in the top of the window.
