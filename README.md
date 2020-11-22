@@ -15,6 +15,7 @@ You can adjust various settings such as sensitivity and your default home direct
 
 ## Controls
 * WASD to move
+* Scroll wheel to change movement speed
 * Mouse to rotate the camera
 * Enter to toggle locking the mouse cursor for camera movement
 * Hold down left mouse to temporarily use 
