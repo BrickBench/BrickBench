@@ -1,6 +1,6 @@
 # BrickBench
 BrickBench is a map viewer for TCS (and LIJ1/Batman experimentally) that currently loads most of the files that have map data. The current files
-that are loaded are GSC, TER, and AI2.
+that are loaded are GSC, TER, GIZ, and AI2.
 
 ## Instructions
 There are two options for loading. 
@@ -21,12 +21,15 @@ You can adjust various settings such as sensitivity and your default home direct
 * Enter to toggle locking the mouse cursor for camera movement
 * Hold down left mouse to temporarily use 
 * 1,2,3,4,5,6,7,8,9,0 to toggle rendering for the top menu
-* Ctrl-G to go to a specific position
+* G to go to a specific position
+* C to toggle compact mode
+* H to toggle shadows
+* L to open the load menu
+* R to reset the view to the origin
+* + and - to change speed
 
 ## Current Bugs
 * Material and shading pipeline improperly emulated resulting in mistexturing and other oddities.
-* Mouse sometime snaps out of place.
-* Some collision meshes some do not have the correct rotation applied.
 * Intel integrated GPUs have alot of issues and may not run correctly.
 
 To report bugs, add an issue to this repository in the top of the window.
