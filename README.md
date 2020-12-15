@@ -14,20 +14,6 @@ be viewed on the left.
 
 You can adjust various settings such as sensitivity and your default home directory in the "Settings" menu under File.
 
-## Controls
-* WASD to move
-* Scroll wheel to change movement speed
-* Mouse to rotate the camera
-* Enter to toggle locking the mouse cursor for camera movement
-* Hold down left mouse to temporarily use 
-* 1,2,3,4,5,6,7,8,9,0 to toggle rendering for the top menu
-* G to go to a specific position
-* C to toggle compact mode
-* H to toggle shadows
-* L to open the load menu
-* R to reset the view to the origin
-* + and - to change speed
-
 ## Current Bugs
 * Material and shading pipeline improperly emulated resulting in mistexturing and other oddities.
 * Intel integrated GPUs have alot of issues and may not run correctly.
