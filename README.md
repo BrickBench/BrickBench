@@ -14,8 +14,6 @@ be viewed on the left.
 
 You can adjust various settings such as sensitivity and your default home directory in the "Settings" menu under File.
 
-## Current Bugs
-* Material and shading pipeline improperly emulated resulting in mistexturing and other oddities.
-* Intel integrated GPUs have alot of issues and may not run correctly.
-
 To report bugs, add an issue to this repository in the top of the window.
+
+Please visit the wiki at https://github.com/BrickBench/BrickBench/wiki for more info!
