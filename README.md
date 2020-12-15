@@ -2,6 +2,8 @@
 BrickBench is a map viewer for TCS (and LIJ1/Batman experimentally) that currently loads most of the files that have map data. The current files
 that are loaded are GSC, TER, GIZ, and AI2.
 
+Please visit the wiki at https://github.com/BrickBench/BrickBench/wiki for more info!
+
 ## Instructions
 There are two options for loading. 
 * Load a specific file by selecting the file in the file explorer popup or dragging it into the window.
@@ -16,4 +18,3 @@ You can adjust various settings such as sensitivity and your default home direct
 
 To report bugs, add an issue to this repository in the top of the window.
 
-Please visit the wiki at https://github.com/BrickBench/BrickBench/wiki for more info!
