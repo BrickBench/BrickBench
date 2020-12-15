@@ -3,18 +3,3 @@ BrickBench is a map viewer for TCS (and LIJ1/Batman experimentally) that current
 that are loaded are GSC, TER, GIZ, and AI2.
 
 Please visit the wiki at https://github.com/BrickBench/BrickBench/wiki for more info!
-
-## Instructions
-There are two options for loading. 
-* Load a specific file by selecting the file in the file explorer popup or dragging it into the window.
-* Load all relevant map files for a map by selecting the file directory in the file explorer popup, or dragging a directory into the window.
-  * For AI2 files to load with the
-directory option, they should be included in a subdirectory called AI in the map directory.
-
-Once a map is loaded, information about the various subcomponents of the map such as triggers, locators for scripts, and splines can
-be viewed on the left.
-
-You can adjust various settings such as sensitivity and your default home directory in the "Settings" menu under File.
-
-To report bugs, add an issue to this repository in the top of the window.
-
