@@ -1,0 +1,23 @@
+layout(location = 0) out vec4 fcolor;
+
+layout(location = 0) in vec2 textureCoord;
+layout(location = 1) in vec3 pos;
+layout(location = 2) in vec3 norm;
+
+vec3 n;
+layout(binding = 0, set = 0) unwrap uniform VP{
+    mat4 view;
+    mat4 perspective;
+    vec3 camera;
+};
+
+layout(binding = 0, set = 1) unwrap uniform Model{
+    mat4 model;
+};
+
+uniform layout(set = 1, binding = 1) sampler2D Kd;
+uniform layout(set = 2, binding = 0) samplerCube cubemap;
+
+vec4 getTex(sampler2D tname){
+    return texture(tname, textureCoord);
+}

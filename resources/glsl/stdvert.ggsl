@@ -1,0 +1,18 @@
+layout(location = 0) out vec2 textureCoord;
+layout(location = 1) out vec3 pos;
+layout(location = 2) out vec3 norm;
+
+out gl_PerVertex{
+    vec4 gl_Position;
+    float gl_PointSize;
+};
+
+layout(binding = 0, set = 0) unwrap uniform VP{
+    mat4 view;
+    mat4 projection;
+    vec3 camera;
+};
+
+layout(binding = 0, set = 1) unwrap uniform Model{
+    mat4 model;
+};

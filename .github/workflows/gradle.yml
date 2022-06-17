@@ -1,0 +1,49 @@
+# This workflow will build a Java project with Gradle
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Loader Package Deployment
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build release
+    strategy:
+      matrix:
+        os: [windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      USERNAME: javster101
+      TOKEN: ${{ secrets.PERSONAL_REPO_KEY }}
+      GITHUB_TOKEN: ${{ secrets.PERSONAL_REPO_KEY }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+
+      - name: Build
+        run: ./gradlew jpackage -PisCI
+
+      - name: Release-Linux
+        if: contains(matrix.os, 'ubuntu')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: | 
+            ./build/jpackage/*.tar.gz
+            ./build/jpackage/*.rpm
+            ./build/jpackage/*.deb
+      
+      - name: Release-Windows
+        if: contains(matrix.os, 'windows')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: | 
+            ./build/jpackage/*.msi
+            ./build/jpackage/*.zip
+

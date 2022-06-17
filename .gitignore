@@ -1,0 +1,26 @@
+# Default ignored files
+/shelf/
+/.idea/workspace.xml
+/.idea/
+/build/
+/bin/
+/resources/tex/map/
+/.gradle/
+/.settings/
+/.classpath
+/.project
+*.log
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+gradle/wrapper/gradle-6.8.3-bin.zip
+gradle/wrapper/gradle-wrapper.jar
+
+.ccls
+.ccls-cache
+.clj-kondo
+.lsp
+/workspace/
+Updater.exe

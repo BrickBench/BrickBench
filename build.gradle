@@ -1,0 +1,290 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+plugins{
+    id 'application'
+    id "org.beryx.jlink" version "2.24.0"
+}
+
+group 'com.opengg'
+version '0.3.2'
+
+project.ext.javaVersion = 1.18
+project.ext.lwjglVersion = "3.3.1"
+
+if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    project.ext.lwjglNatives = "natives-windows"
+} else {
+    project.ext.lwjglNatives = "natives-linux"
+}
+
+sourceCompatibility = project.ext.javaVersion
+targetCompatibility = project.ext.javaVersion
+
+repositories {
+    mavenCentral()
+    maven {url 'https://oss.jfrog.org/artifactory/oss-snapshot-local'}
+    maven {url 'https://oss.sonatype.org/content/repositories/snapshots/'}
+    maven {url 'https://maven.nikr.net/'}
+    maven {url 'https://jitpack.io'}
+    maven {
+        url'https://maven.pkg.github.com/OpenGGEngine/OpenGG-Project'
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+        }}
+}
+
+configure(subprojects.findAll {it.name != 'modules'}) {
+    apply plugin: 'java'
+    project.ext.javaVersion = 1.18
+
+    sourceCompatibility = project.ext.javaVersion
+    targetCompatibility = project.ext.javaVersion
+
+    project.ext.steamworks4jVersion = "1.8.0"
+
+    java {
+        modularity.inferModulePath = true
+    }
+
+    compileJava {
+        options.compilerArgs << '--enable-preview'
+        options.incremental = true
+        options.fork = true
+    }
+
+    repositories {
+        jcenter()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+
+    }
+}
+
+java {
+    modularity.inferModulePath = true
+}
+
+if (project.hasProperty("isCI")) {
+    dependencies {
+        implementation  'com.opengg:opengg-engine-core:0.0.4-SNAPSHOT'
+        implementation  'com.opengg:opengg-engine-math:0.0.4-SNAPSHOT'
+        implementation  'com.opengg:opengg-engine-system:0.0.4-SNAPSHOT'
+        implementation  'com.opengg:opengg-engine-base:0.0.4-SNAPSHOT'
+        implementation  'com.opengg:opengg-engine-console:0.0.4-SNAPSHOT'
+    }
+}else{
+    dependencies {
+        implementation  project(':modules:base')
+        implementation  project(':modules:system')
+        implementation  project(':modules:core')
+        implementation  project(':modules:math')
+        implementation  project(':modules:console')
+    }
+}
+
+dependencies {
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.7.1'
+    testImplementation  'com.formdev:flatlaf:1.2'
+    testImplementation  'com.formdev:flatlaf-intellij-themes:1.2'
+
+    implementation 'com.formdev:flatlaf:1.2'
+    implementation 'com.formdev:flatlaf-extras:1.2'
+    implementation 'com.formdev:flatlaf-intellij-themes:1.2'
+    implementation 'net.nikr:dds:1.0.0'
+    implementation 'com.github.kwhat:jnativehook:2.2.2'
+    implementation "org.kohsuke:github-api:1.122"
+    implementation 'org.apache.commons:commons-lang3:3.11'
+    implementation 'commons-io:commons-io:2.8.0'
+    implementation "com.github.ben-manes.caffeine:caffeine:3.0.2"
+    implementation 'com.davidehrmann.vcdiff:vcdiff-core:0.1.1'
+    implementation 'net.sourceforge.argparse4j:argparse4j:0.9.0'
+    implementation 'org.reflections:reflections:0.10'
+    implementation files('lib/discord-rpc-1.6.2.jar')
+
+    implementation 'com.miglayout:miglayout-swing:4.3-SNAPSHOT'
+
+    implementation 'com.fasterxml:aalto-xml:1.2.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.0'
+    implementation 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.13.0'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.13.0'
+
+    implementation "org.lwjgl:lwjgl"
+    implementation "org.lwjgl:lwjgl-nfd"
+    implementation "org.lwjgl:lwjgl-meshoptimizer"
+    implementation "org.lwjgl:lwjgl-tinyfd"
+    implementation "org.lwjgl:lwjgl::$lwjglNatives"
+    implementation "org.lwjgl:lwjgl-nfd::$lwjglNatives"
+    implementation "org.lwjgl:lwjgl-meshoptimizer::$lwjglNatives"
+    implementation "org.lwjgl:lwjgl-tinyfd::$lwjglNatives"
+
+    implementation 'net.java.dev.jna:jna:5.6.0'
+    implementation 'net.java.dev.jna:jna-platform:5.6.0'
+
+    implementation 'com.github.austinc:jnrepl:1.2'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+
+    test{
+        java{
+            srcDirs = ['test']
+        }
+    }
+}
+
+test{
+    useJUnitPlatform()
+}
+
+compileJava {
+    options.incremental = true
+    options.fork = true
+}
+
+//gradle was made by a 2 year old
+tasks.withType(JavaCompile) {
+    doFirst {
+        options.compilerArgs = [
+                '--module-path', classpath.asPath, '--enable-preview', '-parameters'
+        ]
+        classpath = files()
+    }
+}
+
+tasks.withType(JavaExec){
+    doFirst {
+        jvmArgs = [
+                '--module-path', classpath.asPath, '--enable-preview'
+        ]
+        classpath = files()
+    }
+}
+
+javadoc.options {
+    addStringOption('-release', '18')
+    addBooleanOption('-enable-preview', true)
+}
+
+tasks.withType(Test){
+    doFirst {
+        jvmArgs = [
+                '--module-path', classpath.asPath, '--enable-preview'
+        ]
+        classpath = files()
+    }
+}
+
+mainClassName = 'com.opengg.loader.BrickBench'
+
+application  {
+    mainModule = 'com.opengg.loader'
+}
+
+if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    ext.artifactName = 'BrickBench'
+} else {
+    ext.artifactName = 'brickbench'
+}
+
+jlink {
+    options = ['--strip-debug', '--compress', '1', '--no-header-files', '--no-man-pages']
+    launcher{
+        name = artifactName
+        jvmArgs = ['--enable-preview']
+    }
+
+    jpackage {
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            installerOptions = ['--verbose',
+                                '--win-dir-chooser',
+                                '--win-menu',
+                                '--win-menu-group', 'OpenGG Team',
+                                '--vendor', 'OpenGG Team',
+                                '--file-associations', 'brickbench.aso']
+            icon = 'resources/tex/icon.ico'
+            installerType = 'msi'
+            appVersion = version
+        } else {
+            installerOptions = ['--verbose',
+                                '--linux-package-name', artifactName,
+                                '--linux-menu-group', 'OpenGG Team',
+                                '--vendor', 'OpenGG Team',
+                                '--file-associations', 'brickbench.aso']
+            icon = 'resources/tex/icon.png'
+            appVersion = version
+        }
+    }
+
+    forceMerge 'flatlaf-extras'
+    mergedModule {
+        additive = true  // redundant, because excludeXXX() methods are also present
+        requires 'com.formdev.flatlaf'
+        requires 'com.fasterxml.jackson.databind'
+    }
+}
+
+tasks.jlink.doLast {
+    copy {
+        from('resources')
+        into("$buildDir/image/resources")
+    }
+    copy {
+        from('Updater.exe')
+        into("$buildDir/image")
+    }
+}
+
+if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    task packageDistribution(type: Zip) {
+        archiveFileName = artifactName + "-" + version + "-windows_x86_64" + ".zip"
+        destinationDirectory = file("$buildDir/jpackage")
+        from("$buildDir/jpackage/" + artifactName)
+        into("BrickBench")
+    }
+} else {
+    task packageDistribution(type: Tar) {
+        archiveFileName = artifactName + "-" + version + "-linux_x86_64" + ".tar.gz"
+        destinationDirectory = file("$buildDir/jpackage")
+        from("$buildDir/jpackage/" + artifactName)
+    }
+}
+
+
+tasks.jpackageImage.doLast {
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        delete "$buildDir/jpackage/" + artifactName + "/runtime/resources"
+        delete "$buildDir/jpackage/" + artifactName + "/runtime/Updater.exe"
+        delete "$buildDir/jpackage/" + artifactName + "/runtime/documentation.pdf"
+
+        exec {
+            workingDir "${buildDir}/jpackage/" + artifactName
+            executable 'attrib'
+            args '-r', 'BrickBench.exe'
+        }
+
+        copy {
+            from('resources')
+            into("$buildDir/jpackage/" + artifactName + "/resources")
+        }
+        copy {
+            from('Updater.exe')
+            into("$buildDir/jpackage/" + artifactName)
+        }
+        copy {
+            from('documentation.pdf')
+            into("$buildDir/jpackage/" + artifactName)
+        }
+    }
+}
+
+tasks.jpackageImage.finalizedBy(packageDistribution)
+

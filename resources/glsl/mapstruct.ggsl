@@ -1,0 +1,53 @@
+struct LegoLight{
+    vec3 pos;
+    vec3 color;
+};
+
+layout(set = 6, binding = 3) unwrap uniform BrickBenchSettings{
+    int globalApplyLights;
+    int globalUseLightmaps;
+    int globalUseDynamicLights;
+    int globalUseMeshTransparency;
+    int globalUseVertexColor;
+    int muteColors;
+    int lightmapReady;
+};
+
+layout(set = 6, binding = 2) unwrap uniform LegoMaterial{
+    float alphaCutoff;
+
+    vec4 layer0_diffuse;
+
+    int LIGHTMAP_STAGE;
+    int LIGHTING_STAGE;
+
+    int PRELIGHT_FX;
+    int PRELIGHT_FX_LIVE_SPECULAR;
+
+    int SURFACE_UVSET;
+    int LIGHTMAP_UVSET;
+
+    int SURFACE_TYPE;
+
+    int LAYER0_DIFFUSEENABLE;
+    int LAYER0_COLORSET;
+    int COMBINE_OP_0;
+
+};
+
+uniform int LIGHTING_LIGHTS_COUNT;
+
+uniform LegoLight light0;
+uniform LegoLight light1;
+uniform LegoLight light2;
+
+uniform sampler2D layer0_sampler;
+uniform sampler2D surface_sampler;
+
+uniform layout(set = 6, binding = 4)sampler2D lightmap1;
+uniform layout(set = 6, binding = 5)sampler2D lightmap2;
+uniform layout(set = 6, binding = 6)sampler2D lightmap3;
+uniform layout(set = 6, binding = 7)sampler2D lightmap4;
+
+
+

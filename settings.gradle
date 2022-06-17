@@ -1,0 +1,9 @@
+rootProject.name = 'brick-bench'
+
+include ':modules:core', ':modules:math', ':modules:system', ':modules:base', ':modules:console'
+project(':modules:core').projectDir = new File("../OpenGG-Project/modules/core")
+project(':modules:math').projectDir = new File("../OpenGG-Project/modules/math")
+project(':modules:system').projectDir = new File("../OpenGG-Project/modules/system")
+project(':modules:base').projectDir = new File("../OpenGG-Project/modules/base")
+project(':modules:console').projectDir = new File("../OpenGG-Project/modules/console")
+

@@ -1,0 +1,75 @@
+@include stdfrag.ggsl
+struct Material
+{
+    float ns;
+    vec3 ks;
+    vec3 ka;
+    vec3 kd;
+    float hasnormmap;
+    float hasambmap;
+    float hasspec;
+    float hasspecpow;
+    float hascolormap;
+    float hasem;
+};
+
+layout(set = 4, binding = 1) uniform sampler2D Ka;
+layout(set = 4, binding = 2) uniform sampler2D Ks;
+layout(set = 4, binding = 3) uniform sampler2D Ns;
+layout(set = 4, binding = 4) uniform sampler2D em;
+layout(set = 4, binding = 5) uniform sampler2D bump;
+
+vec3 ambient;
+vec3 specular;
+vec3 diffuse;
+vec3 emmisive;
+float specpow;
+vec3 specpowvec;
+vec3 reflectedcolor;
+float trans;
+
+
+mat3 cotangent_frame( vec3 N, vec3 p, vec2 uv ){
+    // get edge vectors of the pixel triangle
+    vec3 dp1 = dFdx( p );
+    vec3 dp2 = dFdy( p );
+    vec2 duv1 = dFdx( uv );
+    vec2 duv2 = dFdy( uv );
+
+    // solve the linear system
+    vec3 dp2perp = cross( dp2, N );
+    vec3 dp1perp = cross( N, dp1 );
+    vec3 T = dp2perp * duv1.x + dp1perp * duv2.x;
+    vec3 B = dp2perp * duv1.y + dp1perp * duv2.y;
+
+    // construct a scale-invariant frame
+    float invmax = inversesqrt( max( dot(T,T), dot(B,B) ) );
+    return mat3( T * invmax, B * invmax, N );
+}
+
+vec3 calculatenormal( vec3 N, vec3 V, vec3 map, vec2 texcoord){
+    map = map * 255./127. - 128./127.;
+    mat3 TBN = cotangent_frame( N, -V, texcoord);
+    return normalize( TBN * map );
+}
+
+void useMaterial(Material mat){
+    vec4 KdDiff = getTex(Kd);
+
+	diffuse = (KdDiff.xyz * mat.hascolormap) + ((1-mat.hascolormap) * mat.kd);
+
+	emmisive = getTex(em).xyz * mat.hasem;
+
+    trans = (KdDiff.w * mat.hascolormap) + ((1-mat.hascolormap));
+
+    ambient = 0.3f * diffuse;
+
+    specular = getTex(Ks).xyz * mat.hasspec + mat.ks * (1-mat.hasspec);
+
+    specpow = (getTex(Ns).r * mat.hasspecpow * 128) + mat.ns * (1-mat.hasspecpow);
+
+	n = normalize(norm) * (1-mat.hasnormmap);
+
+	//reflectedcolor = texture(cubemap, normalize(reflect(eyedir,n))).xyz;
+
+}

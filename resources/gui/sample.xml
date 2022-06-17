@@ -1,0 +1,11 @@
+<gggui name = "temp">
+<group name ="lol" pos="0.2,0.2">
+<ggbutton name="button1"  pos="0.2,0.3" size="0.2,0.2" tex="temp.png"></ggbutton>
+<gtex name="texture1"  pos="0.1,0.3" size="0.5,0.2" tex="blend1.png"></gtex>
+</group>
+<group name ="lol2" pos="0.2,0.3">
+<ggbutton name = "button2" pos="0.2,0.3" size="0.2,0.2" tex="temp.png"  >
+</ggbutton>
+<ggtext name = "ss" pos="0.2,0" size="0.2,1.2" font="default.ttf" layer="0">This is the text inside of the text.</ggtext>
+</group>
+</gggui>
