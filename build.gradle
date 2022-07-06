@@ -87,12 +87,12 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.7.1'
-    testImplementation  'com.formdev:flatlaf:1.2'
-    testImplementation  'com.formdev:flatlaf-intellij-themes:1.2'
+    testImplementation  'com.formdev:flatlaf:2.3'
+    testImplementation  'com.formdev:flatlaf-intellij-themes:2.3'
 
-    implementation 'com.formdev:flatlaf:1.2'
-    implementation 'com.formdev:flatlaf-extras:1.2'
-    implementation 'com.formdev:flatlaf-intellij-themes:1.2'
+    implementation 'com.formdev:flatlaf:2.3'
+    implementation 'com.formdev:flatlaf-extras:2.3'
+    implementation 'com.formdev:flatlaf-intellij-themes:2.3'
     implementation 'net.nikr:dds:1.0.0'
     implementation 'com.github.kwhat:jnativehook:2.2.2'
     implementation "org.kohsuke:github-api:1.122"

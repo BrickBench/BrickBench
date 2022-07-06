@@ -92,7 +92,7 @@ public sealed interface Gizmo extends MapEntity<Gizmo>, Selectable  {
                     MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 2 + 1 + 1 + 4 + 1, newPosition.toLittleEndianByteBuffer());
                 }
                 case FloatProperty nF && propName.equals("Activation range") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 2 + 1 + 1 + 4 + 1 + 12,
-                        ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putFloat(nF.value()).array());
+                     Util.littleEndian(nF.value()));
                 case null, default -> {
                 }
             }

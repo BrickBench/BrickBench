@@ -39,7 +39,6 @@ public class ProjectIO {
         
         GGConsole.log("Saving " + project.projectName());
 
-
         try (var exit = SwingUtil.showLoadingAlert("Saving...", "Saving project...", false)){
             for (var map : project.maps()) {
                 var otherSaveFiles = MapIO.saveMapAndGetFiles(map, project, project.projectXml().resolveSibling(Path.of(map.name())));

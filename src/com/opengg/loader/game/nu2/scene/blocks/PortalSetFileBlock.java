@@ -26,52 +26,45 @@ public class PortalSetFileBlock extends DefaultFileBlock{
 
         int[] sectionCData = new int[sectionCLen];
         for (int i = 0; i < sectionCLen; i++) {
-            sectionCData[i] = Util.asUnsignedShort(fileBuffer.getShort());
+            int idx = Util.asUnsignedShort(fileBuffer.getShort());
         }
     //    System.out.println("Dumbo: " + Integer.toHexString(fileBuffer.position()));
         /*16 byte region*/
-        float[] sectionDData = new float[sectionDLen*4];
         for (int i = 0; i < sectionDLen; i++) {
-            sectionDData[i*4] = fileBuffer.getFloat();
-            sectionDData[i*4+1] = fileBuffer.getFloat();
-            sectionDData[i*4+2] = fileBuffer.getFloat();
-            sectionDData[i*4+3] = fileBuffer.getFloat();
+            float f1 = fileBuffer.getFloat();
+            float f2 = fileBuffer.getFloat();
+            float f3 = fileBuffer.getFloat();
+            float f4 = fileBuffer.getFloat();
         }
 
-        int[] sectionFData = new int[sectionFLen];
         for (int i = 0; i < sectionFLen; i++) {
-            sectionFData[i] = Util.asUnsignedShort(fileBuffer.getShort());
+            int shorty = Util.asUnsignedShort(fileBuffer.getShort());
         }
         //com.opengg.loader.game.nu2.render.blocks.PortalSetFileBlock.com.opengg.loader.game.nu2.scene.Portal Rectangle Coordinates
-        float[] sectionEData = new float[sectionELen*3];
-        for (int i = 0; i < sectionELen; i++) {
-            sectionEData[i*3] = fileBuffer.getFloat();
-            sectionEData[i*3+1] = fileBuffer.getFloat();
-            sectionEData[i*3+2] = fileBuffer.getFloat();
+        for (int i = 0; i < sectionELen/4; i++) {
+            var p1 = new Vector3f(fileBuffer.getFloat(), fileBuffer.getFloat(), fileBuffer.getFloat());
+            var p2 = new Vector3f(fileBuffer.getFloat(), fileBuffer.getFloat(), fileBuffer.getFloat());
+            var p3 = new Vector3f(fileBuffer.getFloat(), fileBuffer.getFloat(), fileBuffer.getFloat());
+            var p4 = new Vector3f(fileBuffer.getFloat(), fileBuffer.getFloat(), fileBuffer.getFloat());
+            mapData.scene().portalList().add(new Portal(i, new Portal.Rectangle(p1, p2, p3, p4)));
         }
 
         //Room Section
-        int[] sectionBData = new int[sectionBLen*6];
-       // System.out.println("Room pos: " +fileBuffer.position());
         for (int i = 0; i < sectionBLen; i++) {
             //Index into Section C
-            sectionBData[i*6] = fileBuffer.getInt();
-            sectionBData[i*6+1] = fileBuffer.getInt();
-          //  System.out.println(sectionDData[sectionBData[i*6+1]] +","+sectionDData[sectionBData[i*6+1]+1] +","+sectionDData[sectionBData[i*6+1]+2]+","+sectionDData[sectionBData[i*6+1]+3]);
+            fileBuffer.getInt();
+            //Index into Section D
+            fileBuffer.getInt();
             //0x08
             //Index into Section F
-            sectionBData[i*6+2] = fileBuffer.getInt();
+            fileBuffer.getInt();
             //0x0F is num portals
-           // System.out.println(com.opengg.loader.Util.asUnsignedByte(fileBuffer.get())+","+com.opengg.loader.Util.asUnsignedByte(fileBuffer.get())+","+
-           //         com.opengg.loader.Util.asUnsignedByte(fileBuffer.get())+","+com.opengg.loader.Util.asUnsignedByte(fileBuffer.get()));
             //sectionBData[i*6+3] = fileBuffer.getInt();
             //0x10
-            sectionBData[i*6+4] = fileBuffer.getInt();
+            fileBuffer.getInt();
             //System.out.println(sectionBData[i*6+4]);
             //0x14
-            sectionBData[i*6+5] = fileBuffer.getInt();
-            //System.out.println(sectionBData[i*6+5]);
-          //  System.out.println("------");
+            fileBuffer.getInt();
         }
 
         //com.opengg.loader.game.nu2.render.blocks.PortalSetFileBlock.com.opengg.loader.game.nu2.scene.Portal Data
@@ -90,12 +83,11 @@ public class PortalSetFileBlock extends DefaultFileBlock{
             fileBuffer.getInt();
         }
 
-
         for(int i = 0; i < sectionELen/4; i++){
-            var p1 = new Vector3f(sectionEData[i*4*3],  sectionEData[i*4*3 + 1], sectionEData[i*4*3 + 2]);
-            var p2 = new Vector3f(sectionEData[i*4*3 + 3],  sectionEData[i*4*3 + 4], sectionEData[i*4*3 + 5]);
-            var p3 = new Vector3f(sectionEData[i*4*3 + 6],  sectionEData[i*4*3 + 7], sectionEData[i*4*3 + 8]);
-            var p4 = new Vector3f(sectionEData[i*4*3 + 9],  sectionEData[i*4*3 + 10], sectionEData[i*4*3 + 11]);
+            var p1 = new Vector3f(fileBuffer.getFloat(), fileBuffer.getFloat(), fileBuffer.getFloat());
+            var p2 = new Vector3f(fileBuffer.getFloat(), fileBuffer.getFloat(), fileBuffer.getFloat());
+            var p3 = new Vector3f(fileBuffer.getFloat(), fileBuffer.getFloat(), fileBuffer.getFloat());
+            var p4 = new Vector3f(fileBuffer.getFloat(), fileBuffer.getFloat(), fileBuffer.getFloat());
             mapData.scene().portalList().add(new Portal(i, new Portal.Rectangle(p1, p2, p3, p4)));
         }
     }

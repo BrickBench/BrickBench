@@ -1,6 +1,7 @@
 package com.opengg.loader;
 
 import com.opengg.core.math.Vector2f;
+import com.opengg.core.math.Vector4f;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -113,6 +114,15 @@ public class Util {
             exp--;
         }
         return result + dResult;
+    }
+
+    public static Vector4f packedIntToVector4f(int i) {
+        return new Vector4f(
+            (i & 0xff) / 255f,
+            (i >> 8 & 0xff) / 255f,
+            (i >> 16 & 0xff) / 255f,
+            (i >> 24 & 0xff) / 255f
+        );
     }
 
     /**

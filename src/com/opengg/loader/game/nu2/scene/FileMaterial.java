@@ -41,6 +41,7 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
     private int shaderDefinesBits = 0;
     private int uvSetCoords = 0;
     private int lightmapSetIndex = 0;
+    private int specularSetIndex = 0;
     private int surfaceUVIndex = 0;
     private int textureFlags = 0;
 
@@ -51,14 +52,17 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
 
     private int alphaType = 0;
     private Vector4f color = new Vector4f(0, 0, 0, 1);
-
+    private Vector4f specular = new Vector4f();
+    private Vector4f reflectivity = new Vector4f();
+    
     private Map<String, Integer> defines = new LinkedHashMap<>();
 
     boolean loadedTextures = false;
 
     private FileTexture fileDiffuse;
     private FileTexture fileNormal;
-
+    private FileTexture fileSpecular;
+    
     private CompletableFuture<ImageIcon> icon;
 
     private final List<VertexArrayBinding.VertexArrayAttribute> arrayFormat = new ArrayList<>();
@@ -102,7 +106,6 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
         int tangentType2;
         int local_1c;
         int halfFloatTexType;
-        int local_c;
         int colorFlag1;
 
         if (((formatBits & 8) == 0) && ((formatBits & 0x880000) == 0)) {
@@ -138,7 +141,7 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
         } else {
             local_24 = 2;
         }
-        local_c = formatBits >> 0x1a & 1;
+        int local_c = formatBits >> 0x1a & 1;
         int local_4 = formatBits >> 0x16 & 1;
         arrayFormat.add(new VertexArrayBinding.VertexArrayAttribute("position", 3 * 4, VertexArrayBinding.VertexArrayAttribute.Type.FLOAT3, 0));
         int offset = 0xc;
@@ -308,6 +311,10 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
         defines.put("LIGHTING_STAGE", 1);
         defines.put("LIGHTMAP_STAGE", 0);
         defines.put("SURFACE_TYPE2", 0);
+        defines.put("FRESNEL_STAGE", 0);
+        defines.put("REFLECTIVITY_STAGE", 0);
+        defines.put("SPECULAR_SPECULARENABLE", 0);
+        defines.put("REFRACTION_STAGE", 0);
         defines.put("COMBINE_OP_0", isLayerEnabled(0) ? 1 : 0);
         defines.put("LAYER0_DIFFUSEENABLE", hasDiffuseMap(0) ? 0 : 1);
 
@@ -376,6 +383,33 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
         } else {
             defines.put("SURFACE_TYPE", 2); //parallax map
         }
+
+        if ((shaderDefinesBits >> 3 & 1) != 0 || 
+            (shaderDefinesBits >> 4 & 1) != 0) {
+            if (fileSpecular != null) {
+                defines.put("SPECULAR_UVSET", specularSetIndex - 1);
+            } else {
+                defines.put("SPECULAR_SPECULARENABLE", 1);
+            }
+
+            defines.put("REFLECTIVITY_STAGE", 1);
+
+            if ((shaderDefinesBits >> 2 & 1) != 0) {
+                defines.put("FRESNEL_STAGE", 1);
+            }
+
+            if ((shaderDefinesBits >> 10 & 1) != 0) {
+                if ((shaderDefinesBits >> 9 & 1) == 0) {
+                    if ((shaderDefinesBits >> 0x1d & 1) == 0) {
+                        defines.put("REFRACTION_STAGE", 1); //DEFAULT
+                    } else {
+                        defines.put("REFRACTION_STAGE", 2); //GLASS
+                    }
+                } else {
+                    defines.put("REFRACTION_STAGE", 3); // WATER
+                }
+            }
+        }
     }
 
     private boolean isLayerEnabled(int layer){
@@ -408,7 +442,13 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
         if (this.getNormalTexture() != null)
             ShaderController.setUniform("surface_sampler", this.getNormalTexture());
 
+        if (this.getSpecularTexture() != null)
+            ShaderController.setUniform("specular_sampler", this.getSpecularTexture());
+        else
+            ShaderController.setUniform("specular_specular", reflectivity);
+
         ShaderController.setUniform("layer0_diffuse", this.getColor());
+        ShaderController.setUniform("specular_params", specular);
         for (var define : this.getDefines().entrySet()) {
             ShaderController.setUniform(define.getKey(), define.getValue());
         }
@@ -461,6 +501,10 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
         return this.fileNormal;
     }
 
+    public void setSpecularFileTexture(FileTexture fileSpecular) {
+        this.fileSpecular = fileSpecular;
+    }
+
     public void setNormalIndex(FileTexture fileNormal) {
         this.fileNormal = fileNormal;
     }
@@ -469,6 +513,12 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
         if (fileDiffuse == null) return null;
 
         return fileDiffuse.nativeTexture().getNow(null);
+    }
+
+    public Texture getSpecularTexture() {
+        if (fileSpecular == null) return null;
+
+        return fileSpecular.nativeTexture().getNow(null);
     }
 
     public Texture getNormalTexture() {
@@ -481,6 +531,14 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
         return color;
     }
 
+    public void setReflectivityColor(Vector4f reflectivity) {
+        this.reflectivity = reflectivity;
+    }
+
+    public void setSpecular(Vector4f specular) {
+        this.specular = specular;
+    }
+
     public void setColor(Vector4f color) {
         this.color = color;
     }
@@ -491,6 +549,10 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
 
     public void setLightmapSetIndex(int lightmapSetIndex) {
         this.lightmapSetIndex = lightmapSetIndex;
+    }
+
+    public void setSpecularIndex(int specularSetIndex) {
+        this.specularSetIndex = specularSetIndex;
     }
 
     public void setSurfaceUVIndex(int normalvs_uvSetIndex) {
@@ -559,8 +621,14 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
                 new EnumProperty("Depth type",depthType, true),
                 new GroupProperty("Textures & Colors",List.of(
                         new EditorEntityProperty("Diffuse texture", fileDiffuse, true, true, "Render/Textures/"),
+                        new EditorEntityProperty("Specular texture", fileSpecular, true, true, "Render/Textures/"),
                         new EditorEntityProperty("Normal texture", fileNormal, true, true, "Render/Textures/"),
                         new ColorProperty("Surface color", color.truncate()),
+                        new ColorProperty("Specular color", reflectivity.truncate()),
+                        new FloatProperty("Specular exponent", specular.x, true),
+                        new FloatProperty("Specular multiplier", specular.y, true),
+                        new FloatProperty("Fresnel coefficient", specular.z, true),
+                        new FloatProperty("Fresnel exponent", specular.w, true),
                         new FloatProperty("Transparency", color.w, false)
                 )),
                 new GroupProperty("Vertex Definition",
@@ -581,6 +649,10 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
                 MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0x74, Util.littleEndian((short) texture.descriptor().trueIndex()));
                 MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x4, Util.littleEndian((short) texture.descriptor().trueIndex()));
             }
+            case FloatProperty fp && propName.equals("Specular exponent") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0x130, Util.littleEndian(fp.value()));
+            case FloatProperty fp && propName.equals("Specular multiplier") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0x134, Util.littleEndian(fp.value()));
+            case FloatProperty fp && propName.equals("Fresnel coefficient") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0x138, Util.littleEndian(fp.value()));
+            case FloatProperty fp && propName.equals("Fresnel exponent") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0x13C, Util.littleEndian(fp.value()));
             case ColorProperty cp && propName.equals("Surface color") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0x54, cp.value().toLittleEndianByteBuffer());
             case EnumProperty ep && propName.equals("Blending type") -> {
                 int blendId = switch ((AlphaBlendType) ep.value()) {

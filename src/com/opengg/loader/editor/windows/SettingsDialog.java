@@ -239,7 +239,7 @@ public class SettingsDialog extends JDialog {
         cacheTextures.setSelected(Boolean.parseBoolean(Configuration.getConfigFile("editor.ini").getConfig("cache-textures")));
         cacheTextures.addActionListener(s -> Configuration.getConfigFile("editor.ini").writeConfig("cache-textures",
                 String.valueOf(cacheTextures.isSelected())));
-        cacheTextures.setToolTipText("<html>Cache textures when loading maps. <br/>This speeds up reloading maps considerably, but maycause crashes on older CPUs.</html>");
+        cacheTextures.setToolTipText("<html>Cache textures when loading maps. <br/>This speeds up reloading maps considerably, but may cause crashes on older CPUs.</html>");
 
         var rotateTerrain = new JCheckBox();
         rotateTerrain.setSelected(Boolean.parseBoolean(Configuration.getConfigFile("editor.ini").getConfig("use-rotation-platform")));

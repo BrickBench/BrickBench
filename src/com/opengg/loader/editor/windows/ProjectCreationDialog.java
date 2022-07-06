@@ -91,8 +91,6 @@ public class ProjectCreationDialog extends JDialog {
             }
 
             try {
-                EditorState.closeActiveMap();
-
                 var projectPath = Resource.getUserDataPath().resolve("project");
                 var outputFile = path.getFile().resolve(name.getText().trim() + ".brickbench");
 
