@@ -151,6 +151,9 @@ public class NU2MapComponent extends MapComponent<NU2MapData> {
             case DOOR -> {
                 updateTextData();
             }
+            case LIGHTS -> {
+                updateRTLData();
+            }
         }
     }
 

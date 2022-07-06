@@ -19,7 +19,6 @@ import com.opengg.loader.game.nu2.rtl.RTLLight;
 import com.opengg.loader.loading.MapLoader;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,7 +41,7 @@ public class GSCMesh implements GameRenderable<GSCMesh>{
     Renderable renderedObject;
     public FileMaterial material;
 
-    private List<VertexArrayBinding.VertexArrayAttribute> attributes;
+    private VertexArrayFormat format;
     private List<RTLLight> lights;
 
     public GSCMesh(int address, int vertexCount, int vertexSize, int vertexOffset, int vertexListID, int triangleCount,
@@ -87,10 +86,12 @@ public class GSCMesh implements GameRenderable<GSCMesh>{
     public void render() {
         if(this.material != FileMaterial.currentMaterial){
             this.material = FileMaterial.currentMaterial;
-            this.attributes = new ArrayList<>(material.getArrayBindings());
+            var attributes = new ArrayList<>(material.getArrayBindings());
             if(MapLoader.CURRENT_GAME_VERSION != Project.GameVersion.LSW_TCS && Configuration.getBoolean("use-backup-lij-vao")){
                 fixForLIJBatman(attributes);
             }
+
+            this.format = new VertexArrayFormat(List.of(new VertexArrayBinding(0, vertexSize, 0, attributes)));
         }
 
         if(EditorState.CURRENT.shouldHighlight && EditorState.getSelectedObject().get() instanceof GSCMesh obj && obj != this) {
@@ -101,40 +102,12 @@ public class GSCMesh implements GameRenderable<GSCMesh>{
             ShaderController.setUniform("muteColors", 0);
         }
 
-        if(material.getDefines().get("LIGHTMAP_STAGE") == 0){
-            if(lights == null) lights = applyLights();
-
-            ShaderController.setUniform("LIGHTING_LIGHTS_COUNT", Math.min(3, lights.size()));
-            for(var i = 0; i < Math.min(3, lights.size()); i++){
-                var light = lights.get(i);
-                ShaderController.setUniform("light" + i + ".pos", light.pos().multiply(new Vector3f(-1,1,1)));
-                ShaderController.setUniform("light" + i + ".color", light.color());
-            }
-        }
-
-        ((DrawnObject)renderedObject).setFormat(new VertexArrayFormat(List.of(new VertexArrayBinding(0, vertexSize, 0, attributes))));
+        ((DrawnObject)renderedObject).setFormat(this.format);
         renderedObject.render();
 
         ShaderController.setUniform("lightmapReady", false);
     }
 
-    public List<RTLLight> applyLights(){
-        var lights = ((NU2MapData)EditorState.getActiveMap().levelData()).rtl().lights();
-
-        record ComputedLight(RTLLight light, float distance){}
-
-        var computedLights = new ArrayList<ComputedLight>();
-        var pos = ((UniformContainer.Matrix4fContainer)ShaderController.getUniform("model")).contents().transform(new Vector3f());
-        for(var light : lights){
-            if(!light.color().equals(new Vector3f(0))){
-                computedLights.add(new ComputedLight(light, light.pos().distanceToSquared(pos)));
-            }
-        }
-
-        computedLights.sort(Comparator.comparingDouble(c1 -> c1.distance));
-
-        return computedLights.stream().map(c -> c.light).collect(Collectors.toList());
-    }
 
     private void fixForLIJBatman(List<VertexArrayBinding.VertexArrayAttribute> src){
         var texcoordLoc = switch (vertexSize){

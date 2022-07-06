@@ -15,12 +15,12 @@ public class LightmapCommandResource implements DisplayCommandResource<LightmapC
     private int address;
 
     private boolean multipleMaps = false;
-    public LightmapCommandResource(int address, int id, int id2, int id3, int id4, NU2MapData mapData){
+    public LightmapCommandResource(int address, boolean type, int id, int id2, int id3, int id4, NU2MapData mapData){
         texture = mapData.scene().texturesByRealIndex().get(id);
         texture2 = mapData.scene().texturesByRealIndex().get(id2);
         texture3 = mapData.scene().texturesByRealIndex().get(id3);
         texture4 = mapData.scene().texturesByRealIndex().get(id4);
-        multipleMaps = id2 >= 0;
+        multipleMaps = type;
         this.address = address;
     }
 
@@ -37,7 +37,6 @@ public class LightmapCommandResource implements DisplayCommandResource<LightmapC
             ShaderController.setUniform("lightmap3", texture3.nativeTexture().getNow(null));
             ShaderController.setUniform("lightmap4", texture4.nativeTexture().getNow(null));
         }
-        ShaderController.setUniform("lightmapCount", multipleMaps ? 2 : 1);
         ShaderController.setUniform("lightmapReady", true);
     }
 

@@ -280,6 +280,7 @@ public record NU2MapData(String name,
                 this.scene().portalList(),
                 this.scene().uniqueRenderCommands().values(),
                 this.scene().splines(),
+                this.rtl().lights(),
                 this.terrain().terrainGroups(),
                 this.terrain().infiniteWallPoints()
         );

@@ -98,12 +98,14 @@ public class DisplaySetBlock extends DefaultFileBlock {
                     case GEOMCALL -> mapData.scene().meshes().get(resourcePtr);
                     case MTL -> mapData.scene().materials().get(resourcePtr);
                     case LIGHTMAP -> {
-                        fileBuffer.position(resourcePtr + 4);
+                        fileBuffer.position(resourcePtr);
+                        int type = fileBuffer.getInt();
                         int lm = fileBuffer.getInt();
                         int lm2 = fileBuffer.getInt();
                         int lm3 = fileBuffer.getInt();
                         int lm4 = fileBuffer.getInt();
-                        yield new LightmapCommandResource(resourcePtr, lm, lm2, lm3, lm4, mapData);
+
+                        yield new LightmapCommandResource(resourcePtr, type == 2, lm, lm2, lm3, lm4, mapData);
 
                     }
                     default -> new UntypedCommandResource(resourcePtr, commandType);
@@ -267,7 +269,7 @@ public class DisplaySetBlock extends DefaultFileBlock {
             int meshOffset = readPointer();
 
             List<FileMaterial> materials = new ArrayList<>();
-            List<GameRenderable<?>> renderables = new ArrayList<>();
+            List<GSCMesh> renderables = new ArrayList<>();
             List<Integer> renderableIndices = new ArrayList<>();
 
             fileBuffer.position(materialOffset);

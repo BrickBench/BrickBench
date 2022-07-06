@@ -39,7 +39,7 @@ public class ObjectTree extends JPanel implements MouseListener, Scrollable {
             "Render/GenericCommand",
             "Render/Lightmaps",
             "Render/Meshes",
-            "Render/Lights",
+            //"Render/Lights",
             "Render/Transforms");
 
     private String lastSearch = "";
