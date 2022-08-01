@@ -227,28 +227,40 @@ public class BrickBench extends GGApplication implements KeyboardListener, Mouse
             X11.Lib.XInitThreads();
         }
 
+        var defaults = Map.ofEntries(
+            Map.entry("sensitivity", "0.5"),
+            Map.entry("laf", "Flat Dark"),
+            Map.entry("fov", "90"),
+            Map.entry("hook-executable-name", "LEGOStarWarsSaga.exe"),
+            Map.entry("use-backup-lij-vao", "true"),
+            Map.entry("autodelete-ai-pak", "true"),
+            Map.entry("show-shadow-maps", "true"),
+            Map.entry("emulate-zbuffer", "true"),
+            Map.entry("show-vertex-color", "true"),
+            Map.entry("show-vertex-transparency", "true"),
+            Map.entry("emulate-alpha", "true"),
+            Map.entry("show-dynamic-lights", "true"),
+            Map.entry("use-rotation-platform", "true"),
+            Map.entry("show-lights", "true"),
+            Map.entry("cache-textures", "true")
+        );
+
         try {
             Configuration.load(Path.of(dataPath.toString() , "config" , "editor.ini"));
             Configuration.load(Path.of(dataPath.toString() , "config", "recent.ini"));
+            
         } catch (IOException e) {
             ConfigFile file = new ConfigFile("editor.ini", new LinkedHashMap<>());
-            file.writeConfig("sensitivity", "0.5");
-            file.writeConfig("laf", "Flat Dark");
-            file.writeConfig("fov", "90");
-            file.writeConfig("hook-executable-name", "LEGOStarWarsSaga.exe");
-            file.writeConfig("use-backup-lij-vao", "true");
-            file.writeConfig("autodelete-ai-pak", "true");
-            file.writeConfig("show-shadow-maps", "true");
-            file.writeConfig("emulate-zbuffer", "true");
-            file.writeConfig("show-vertex-color", "true");
-            file.writeConfig("show-vertex-transparency", "true");
-            file.writeConfig("emulate-alpha", "true");
-            file.writeConfig("show-dynamic-lights", "true");
-            file.writeConfig("use-rotation-platform", "true");
-            file.writeConfig("show-lights", "true");
-
             Configuration.addConfigFile(file);
             Configuration.addConfigFile(new ConfigFile("recent.ini", new LinkedHashMap<>()));
+        }
+
+        for (var entry : defaults.entrySet()) {
+            if (Configuration.getConfigFile("editor.ini").getConfig(entry.getKey()).isEmpty()) {
+                System.out.println(entry);
+                Configuration.getConfigFile("editor.ini").writeConfig(entry.getKey(), entry.getValue());
+                System.out.println(Configuration.getConfigFile("editor.ini").getConfig(entry.getKey()));
+            }
         }
 
         Files.createDirectories(dataPath.resolve("export"));
@@ -717,18 +729,19 @@ public class BrickBench extends GGApplication implements KeyboardListener, Mouse
     }
 
     public void exit() {
-        if (!showSaveProjectPrompt()) return;
+       // SwingUtilities.invokeLater(() -> {
+            if (!showSaveProjectPrompt()) return;
 
-        GGConsole.log("Writing config file on exit");
-        FileTexture.FileTextureCache.haltIconLoader();
-        Configuration.writeFile(Configuration.getConfigFile("editor.ini"));
+            GGConsole.log("Writing config file on exit");
+            FileTexture.FileTextureCache.haltIconLoader();
+            Configuration.writeFile(Configuration.getConfigFile("editor.ini"));
 
-        OpenGG.endApplication();
+            OpenGG.endApplication();
 
-        while(!OpenGG.getEnded()) {}
-
-        GGConsole.log("Closing window");
-        window.dispose();
+            GGConsole.log("Closing window");
+            window.dispose();
+            System.exit(0);
+       // });
     }
 
     public void cleanGameDirectories() {
