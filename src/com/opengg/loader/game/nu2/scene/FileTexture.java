@@ -3,6 +3,7 @@ package com.opengg.loader.game.nu2.scene;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.opengg.core.console.GGConsole;
+import com.opengg.core.Configuration;
 import com.opengg.core.engine.Resource;
 import com.opengg.core.render.texture.DDSLoader;
 import com.opengg.core.render.texture.Texture;
@@ -89,31 +90,40 @@ public record FileTexture(String name, ByteBuffer contents, TextureData ggTextur
                     .build();
         }
 
+        private static ImageIcon getIconFromBuffer(ByteBuffer contents) {
+            byte[] array = new byte[contents.limit()];
+            contents.get(array);
+            contents.rewind();
+
+            try(ByteArrayInputStream bis = new ByteArrayInputStream(array)){
+                BufferedImage image = ImageIO.read(bis);
+                return new ImageIcon(Util.getScaledImage(96, 96, image));
+            } catch (IOException e) {
+                if(Byte.toUnsignedInt(array[0x54]) == 0x74){
+                    return new ImageIcon(Util.getScaledImage(96, 96, ImageUtil.fromABGR8888DDS(contents)));
+                }
+                GGConsole.warning("Failed icon load: " + e.getMessage());
+                return null;
+            }
+        }
+
         public static void submitIcon(ByteBuffer contents, CompletableFuture<ImageIcon> icon) {
             iconExecutor.submit(() -> {
-                long hash = HashUtil.getMeowHash(contents);
-
-                icon.complete(iconsByHash.get(hash, h -> {
-                    byte[] array = new byte[contents.limit()];
-                    contents.get(array);
-                    contents.rewind();
-
-                    try(ByteArrayInputStream bis = new ByteArrayInputStream(array)){
-                        BufferedImage image = ImageIO.read(bis);
-                        return new ImageIcon(Util.getScaledImage(96, 96, image));
-                    } catch (IOException e) {
-                        if(Byte.toUnsignedInt(array[0x54]) == 0x74){
-                            return new ImageIcon(Util.getScaledImage(96, 96, ImageUtil.fromABGR8888DDS(contents)));
-                        }
-                        GGConsole.warning("Failed icon load: " + e.getMessage());
-                        return null;
-                    }
-                }));
+                if (Boolean.parseBoolean(Configuration.get("cache-textures"))) {
+                    long hash = HashUtil.getMeowHash(contents);
+                    icon.complete(iconsByHash.get(hash, h -> getIconFromBuffer(contents)));
+                } else {
+                    icon.complete(getIconFromBuffer(contents));
+                }
             });
         }
 
         public static TextureData getCachedTextureData(ByteBuffer contents, int textureIndex){
-            return texturesByHash.get(HashUtil.getMeowHash(contents), c -> DDSLoader.loadFromBuffer(contents, textureIndex + ".dds"));
+            if (Boolean.parseBoolean(Configuration.get("cache-textures"))) {
+                return texturesByHash.get(HashUtil.getMeowHash(contents), c -> DDSLoader.loadFromBuffer(contents, textureIndex + ".dds"));
+            } else {
+                return DDSLoader.loadFromBuffer(contents, textureIndex + ".dds");
+            }
         }
 
         public static void haltIconLoader(){
