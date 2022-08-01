@@ -8,6 +8,7 @@ import com.opengg.loader.editor.windows.ProjectCreationDialog;
 import com.opengg.loader.game.nu2.scene.IABLComponent;
 import com.opengg.loader.game.nu2.scene.SceneFileLoader;
 import com.opengg.loader.internal.X11;
+import com.opengg.loader.loading.MyDefaultLibraryLocator;
 import com.opengg.loader.loading.ProjectIO;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.impl.Arguments;
@@ -206,6 +207,7 @@ public class BrickBench extends GGApplication implements KeyboardListener, Mouse
 
         if (SystemUtil.IS_WINDOWS && Files.exists(Path.of(System.getProperty("java.home")).resolveSibling("resources"))) { //Run modular windows release
             Resource.setApplicationDirectory(Path.of(System.getProperty("java.home")).getParent());
+            MyDefaultLibraryLocator.setAaDefaultLocator();
         } else if (SystemUtil.IS_LINUX && Files.exists(Path.of(System.getProperty("java.home")).resolve("resources")))   { //Run modular linux release
             Resource.setApplicationDirectory(Path.of(System.getProperty("java.home")));
         } else { //Run IntelliJ release
@@ -506,6 +508,7 @@ public class BrickBench extends GGApplication implements KeyboardListener, Mouse
                 return false;
             }
         }
+        return true;
     }
 
     /**
@@ -513,7 +516,7 @@ public class BrickBench extends GGApplication implements KeyboardListener, Mouse
      *
      */
     public boolean loadNewProject(Path projectFile, boolean saveToRecents) {
-        if (showSaveProjectPrompt()) return false;
+        if (!showSaveProjectPrompt()) return false;
 
         pointsToView.clear();
         TextureManager.clearCache();
