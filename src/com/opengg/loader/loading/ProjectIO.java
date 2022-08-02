@@ -5,6 +5,8 @@ import com.opengg.core.engine.Resource;
 import com.opengg.core.model.io.AssimpModelLoader;
 import com.opengg.core.util.SystemUtil;
 import com.opengg.loader.*;
+import com.opengg.loader.Project.EngineVersion;
+import com.opengg.loader.ProjectStructure.Node;
 import com.opengg.loader.editor.EditorState;
 import com.opengg.loader.editor.windows.ExportDialog;
 import com.opengg.loader.game.nu2.Area;
@@ -34,6 +36,9 @@ public class ProjectIO {
      */
     public static boolean saveProject(Project project, Path output) {
         var filesToSave = new ArrayList<Path>();
+        
+        GGConsole.log("Saving " + project.projectName());
+
 
         try (var exit = SwingUtil.showLoadingAlert("Saving...", "Saving project...", false)){
             for (var map : project.maps()) {
@@ -237,21 +242,37 @@ public class ProjectIO {
      * Open a map/area as a readonly project.
      */
     public static Project createReadOnlyProject(Path projectFile) throws IOException {
-        List<Path> mapFiles;
-        String mapName;
+        EngineVersion engineVersion = EngineVersion.NU2;
+        List<Node<?>> nodes = new ArrayList<>();
+
         if (Files.isRegularFile(projectFile)) {
-            mapName = FilenameUtils.removeExtension(projectFile.getFileName().toString()).toUpperCase(Locale.ROOT).replace("_PC", "");
-            mapFiles = MapLoader.findApplicableFiles(projectFile.getParent(), mapName, MapLoader.determineEngineVersion(projectFile.getParent(), mapName));
+            var mapName = FilenameUtils.removeExtension(projectFile.getFileName().toString()).toUpperCase(Locale.ROOT).replace("_PC", "");
+            var mapFiles = MapLoader.findApplicableFiles(projectFile.getParent(), mapName, MapLoader.determineEngineVersion(projectFile.getParent(), mapName));
+            engineVersion = MapLoader.determineEngineVersion(projectFile, mapName);
+            nodes.add(new MapXml(mapName, projectFile, MapIO.getTypeFromPath(projectFile), mapFiles, Map.of(), Map.of()));
         } else {
-            mapName = projectFile.getFileName().toString();
-            mapFiles = MapLoader.findApplicableFiles(projectFile, projectFile.getFileName().toString(), MapLoader.determineEngineVersion(projectFile.getParent(), mapName));
+            if(!AreaIO.findMapsInDirectory(projectFile).isEmpty()){
+                var maps = new ArrayList<MapXml>();
+
+                for (var map : AreaIO.findMapsInDirectory(projectFile)) {
+                    var mapDir = projectFile.resolve(map.directory());
+                    var mapName = map.directory().toString();
+                    var mapFiles = MapLoader.findApplicableFiles(mapDir, mapDir.getFileName().toString(), MapLoader.determineEngineVersion(mapDir.getParent(), mapName));
+                    engineVersion = MapLoader.determineEngineVersion(mapDir.getParent(), mapName);
+                    maps.add(new MapXml(mapName, mapDir, MapIO.getTypeFromPath(mapDir), mapFiles, Map.of(), Map.of()));
+                }
+                
+                nodes.add(new Area(projectFile.toString(), maps, new Area.AreaProperties()));
+            } else {
+                var mapName = projectFile.getFileName().toString();
+                var mapFiles = MapLoader.findApplicableFiles(projectFile, projectFile.getFileName().toString(), MapLoader.determineEngineVersion(projectFile.getParent(), mapName));
+                engineVersion = MapLoader.determineEngineVersion(projectFile.getParent(), mapName);
+                nodes.add(new MapXml(mapName, projectFile, MapIO.getTypeFromPath(projectFile), mapFiles, Map.of(), Map.of()));
+            }
         }
         
-        var engineVersion = MapLoader.determineEngineVersion(projectFile, mapName);
-        var map = new MapXml(mapName, projectFile, MapIO.getTypeFromPath(projectFile), mapFiles, Map.of(), Map.of());
-        var structure = new ProjectStructure.FolderNode("root", List.of(map));
-
-        return new Project(false, engineVersion.getDefaultGame(), map.name(),
+        var structure = new ProjectStructure.FolderNode("root", nodes);
+        return new Project(false, engineVersion.getDefaultGame(), projectFile.getFileName().toString(),
                 projectFile, projectFile, new Project.Assets(List.of(), List.of()), new ProjectStructure(structure));
     }
 
