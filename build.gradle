@@ -2,7 +2,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins{
     id 'application'
-    id "org.beryx.jlink" version "2.24.0"
+    id "org.beryx.jlink" version "2.25.0"
 }
 
 group 'com.opengg'

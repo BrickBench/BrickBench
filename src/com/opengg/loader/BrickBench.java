@@ -8,7 +8,6 @@ import com.opengg.loader.editor.windows.ProjectCreationDialog;
 import com.opengg.loader.game.nu2.scene.IABLComponent;
 import com.opengg.loader.game.nu2.scene.SceneFileLoader;
 import com.opengg.loader.internal.X11;
-import com.opengg.loader.loading.MyDefaultLibraryLocator;
 import com.opengg.loader.loading.ProjectIO;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.impl.Arguments;
@@ -57,6 +56,7 @@ import com.opengg.loader.editor.hook.TCSHookManager;
 import com.opengg.loader.game.nu2.NU2MapData;
 import com.opengg.loader.game.nu2.scene.FileMaterial;
 import com.opengg.loader.game.nu2.scene.FileTexture;
+import com.opengg.loader.editor.hook.JNativeHookLibraryLocator;
 import com.opengg.loader.loading.MapLoader;
 import com.opengg.loader.loading.MapWriter;
 
@@ -207,7 +207,7 @@ public class BrickBench extends GGApplication implements KeyboardListener, Mouse
 
         if (SystemUtil.IS_WINDOWS && Files.exists(Path.of(System.getProperty("java.home")).resolveSibling("resources"))) { //Run modular windows release
             Resource.setApplicationDirectory(Path.of(System.getProperty("java.home")).getParent());
-            MyDefaultLibraryLocator.setAaDefaultLocator();
+            JNativeHookLibraryLocator.setJNativeHookLocator();
         } else if (SystemUtil.IS_LINUX && Files.exists(Path.of(System.getProperty("java.home")).resolve("resources")))   { //Run modular linux release
             Resource.setApplicationDirectory(Path.of(System.getProperty("java.home")));
         } else { //Run IntelliJ release
@@ -319,8 +319,8 @@ public class BrickBench extends GGApplication implements KeyboardListener, Mouse
             code = 1;
         }
 
-        CURRENT.window.dispose();
         CURRENT = null;
+        System.exit(0);
     }
 
     public void showInitialWindow() {

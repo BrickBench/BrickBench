@@ -3,7 +3,6 @@ package com.opengg.loader.editor.hook;
 import com.opengg.core.Configuration;
 import com.opengg.core.math.Vector3f;
 import com.opengg.core.util.SystemUtil;
-import com.opengg.loader.Project;
 import com.opengg.loader.BrickBench;
 import com.opengg.loader.SwingUtil;
 import com.opengg.loader.components.HookCharacterManager;
@@ -59,7 +58,7 @@ public class TCSHookManager {
     public static void update(){
         if (currentHook != null) {
             allCharacters.clear();
-            var active = currentHook.checkForValidityAndReaquirePointers();
+            var active = panel.isLIJ() ? currentHook.checkForValidityAndReaquirePointersLIJ() : currentHook.checkForValidityAndReaquirePointers();
             if (!active) {
                 currentHook.close();
                 currentHook = null;
@@ -70,7 +69,7 @@ public class TCSHookManager {
                 playerOne = new HookCharacter(currentHook.readPlayerLocation(1), 180 - currentHook.readPlayerAngle(1), 0);
                 playerTwo = new HookCharacter(currentHook.readPlayerLocation(2), 180 - currentHook.readPlayerAngle(2), 0);
 
-                allCharacters = currentHook.getAllCharacters();
+                allCharacters = panel.isLIJ() ? currentHook.getAllCharactersLIJ() : currentHook.getAllCharacters();
 
                 if (Configuration.getBoolean("autoload-hook")) {
                     var currentHookMap = currentHook.getCurrentMap();
@@ -79,8 +78,7 @@ public class TCSHookManager {
                         var newMap = Path.of(currentHook.getDirectory().toString(), currentHookMap);
 
                         if (Files.exists(newMap) &&
-                                (currentMap == null || !currentMap.levelData().xmlData().path().toLowerCase().contains(currentHookMap.toLowerCase()))) {
-
+                                (currentMap == null || !currentMap.levelData().xmlData().mapFilesDirectory().toString().toLowerCase().contains(currentHookMap.toLowerCase()))) {
                             var success = BrickBench.CURRENT.loadNewProject(newMap, false);
                             if (!success) Configuration.set("autoload-hook", "false");
                             BrickBench.CURRENT.player.setPositionOffset(playerOne.pos().multiply(-1, 1, 1).add(new Vector3f(0, 0.2f, 0)));
