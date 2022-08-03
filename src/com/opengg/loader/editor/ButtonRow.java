@@ -109,7 +109,7 @@ class ButtonRow extends JToolBar {
         EditorState.addMapChangeListener(m -> {
             if(m != null) {
                 var map = EditorState.getActiveMap() == null ? null : EditorState.getActiveMap().levelData().xmlData();
-                mapOptions.setSelectedIndex(m.maps().indexOf(map));
+                mapOptions.setSelectedIndex(map == null ? -1 : m.maps().indexOf(map));
             }
         });
     }
