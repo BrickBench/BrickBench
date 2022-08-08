@@ -118,11 +118,12 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
         } else {
             tangentType = 2;
         }
-        if ((formatBits < 0) || ((formatBits & 0x2000000) != 0)) {
-            tangentType2 = 2;
-        } else {
-            tangentType2 = formatBits >> 6 & 1;
+
+        tangentType2 = 2;
+        if ((formatBits & 0x2000080) == 0) {
+            tangentType2 = formatBits & 0x40 & 1;
         }
+
         colorFlag1 = formatBits >> 8 & 1;
         if ((formatBits >> 0x1b & 1) == 0) {
             texType = formatBits >> 0xb & 7;
@@ -148,10 +149,10 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
 
         if (normalType == 1) {
             arrayFormat.add(new VertexArrayBinding.VertexArrayAttribute("vs_normal", 3 * 4, VertexArrayBinding.VertexArrayAttribute.Type.FLOAT3, 3 * 4));
-            offset = 0x18;
+            offset += 0xc;
         } else if (normalType == 2) {
             arrayFormat.add(new VertexArrayBinding.VertexArrayAttribute("vs_normal", 4, VertexArrayBinding.VertexArrayAttribute.Type.UNSIGNED_BYTE, 3 * 4));
-            offset = 0x10;
+            offset += 4;
         }
 
         if (tangentType == 1) {
@@ -179,7 +180,7 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
 
         }
         if ((formatBits & 0x600) != 0) {
-            arrayFormat.add(new VertexArrayBinding.VertexArrayAttribute("color2", 4, VertexArrayBinding.VertexArrayAttribute.Type.BYTE, offset));
+            arrayFormat.add(new VertexArrayBinding.VertexArrayAttribute("color2", 4, VertexArrayBinding.VertexArrayAttribute.Type.UNSIGNED_BYTE, offset));
             offset = offset + 4;
         }
 
@@ -190,7 +191,7 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
             }
         } else {
             for (int i = 0; i < Math.min(halfFloatTexType, 4); i++) {
-                arrayFormat.add(new VertexArrayBinding.VertexArrayAttribute("vs_uv" + i, 4 * 2, VertexArrayBinding.VertexArrayAttribute.Type.HALF_FLOAT2, offset));
+                arrayFormat.add(new VertexArrayBinding.VertexArrayAttribute("vs_uv" + i, 2 * 2, VertexArrayBinding.VertexArrayAttribute.Type.HALF_FLOAT2, offset));
                 offset = offset + 4;
             }
         }

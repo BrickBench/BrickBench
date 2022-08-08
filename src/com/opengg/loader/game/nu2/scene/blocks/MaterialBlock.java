@@ -18,7 +18,6 @@ public class MaterialBlock extends DefaultFileBlock {
         for (int i = 0; i < materialCount; i++) {
             var ptr = fileBuffer.position();
             var material = new FileMaterial(ptr);
-                System.out.println("New Material " + i + " " + Integer.toHexString(ptr));
             mapData.scene().materials().put(ptr, material);
 
             fileBuffer.position(ptr);

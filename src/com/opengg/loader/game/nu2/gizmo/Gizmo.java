@@ -104,7 +104,7 @@ public sealed interface Gizmo extends MapEntity<Gizmo>, Selectable  {
 
     }
 
-    record GizPickup(String name, Vector3f pos, PickupType type, int fileAddress, int fileLength) implements Gizmo{
+    record GizPickup(String name, Vector3f pos, PickupType type, int fileAddress, int fileLength, int index) implements Gizmo{
         @Override
         public BoundingBox getBoundingBox() {
             return new BoundingBox(pos.subtract(0.1f), pos.add(0.1f));
@@ -166,7 +166,7 @@ public sealed interface Gizmo extends MapEntity<Gizmo>, Selectable  {
 
         @Override
         public String path() {
-            return "Gizmo/Pickups/" + name;
+            return "Gizmo/Pickups/" + name + UNIQUE_CHAR + index();
         }
 
         @Override
