@@ -67,7 +67,7 @@ vec3 phongSpecularStage () {
 }
 
 void getLightColor(){
-    if (LIGHTMAP_STAGE == 0 || lightmapReady == 0) {
+    if (LIGHTMAP_STAGE == 0) {
         if (LIGHTING_STAGE == 0) {
             diffuseLight = vec3(1,1,1);
         }
@@ -110,13 +110,13 @@ void getLightColor(){
             }
         }else{
             if(LIGHTING_LIGHTS_COUNT > 0){
-                diffuseLight += ldotn0 * light0.color;
+                diffuseLight = diffuseLight + ldotn0 * light0.color;
             }
             if(LIGHTING_LIGHTS_COUNT > 1){
-                diffuseLight += ldotn1 * light1.color;
+                diffuseLight = diffuseLight + ldotn1 * light1.color;
             }
             if(LIGHTING_LIGHTS_COUNT > 2){
-                diffuseLight += ldotn2 * light2.color;
+                diffuseLight = diffuseLight + ldotn2 * light2.color;
             }
 
             if (LIGHTING_STAGE != 1) {

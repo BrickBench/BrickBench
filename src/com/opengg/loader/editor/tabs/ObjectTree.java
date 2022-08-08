@@ -263,7 +263,6 @@ public class ObjectTree extends JPanel implements MouseListener, Scrollable {
                 continue;
             }
 
-
             var path = item.getValue().path().substring(0, item.getValue().path().lastIndexOf('/'));
             var pathItems = List.of(path.split("/"));
             for (int i = 0; i < pathItems.size(); i++) {

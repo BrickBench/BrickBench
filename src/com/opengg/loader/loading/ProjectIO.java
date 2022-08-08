@@ -255,8 +255,8 @@ public class ProjectIO {
 
                 for (var map : AreaIO.findMapsInDirectory(projectFile)) {
                     var mapDir = projectFile.resolve(map.directory());
-                    var mapName = map.directory().toString();
-                    var mapFiles = MapLoader.findApplicableFiles(mapDir, mapDir.getFileName().toString(), MapLoader.determineEngineVersion(mapDir.getParent(), mapName));
+                    var mapName = map.name();
+                    var mapFiles = MapLoader.findApplicableFiles(mapDir, mapName, MapLoader.determineEngineVersion(mapDir.getParent(), mapName));
                     engineVersion = MapLoader.determineEngineVersion(mapDir.getParent(), mapName);
                     maps.add(new MapXml(mapName, mapDir, MapIO.getTypeFromPath(mapDir), mapFiles, Map.of(), Map.of()));
                 }

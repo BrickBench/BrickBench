@@ -621,7 +621,7 @@ public class GizLoader {
                             fileData.get();
                         }
 
-                        mapData.gizmo().gizmos().add(new Gizmo.GizPickup(pickupName, pos, realType, address, fileData.position() - address));
+                        mapData.gizmo().gizmos().add(new Gizmo.GizPickup(pickupName, pos, realType, address, fileData.position() - address, i));
                     }
                 }
                 case "Lever" -> {

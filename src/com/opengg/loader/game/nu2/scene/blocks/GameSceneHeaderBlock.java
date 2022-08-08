@@ -153,12 +153,10 @@ public class GameSceneHeaderBlock extends DefaultFileBlock{
             default -> ".dxt";
         };
 
-        byte[] content = new byte[descriptor.size()];
-        fileBuffer.get(content);
-
         String name = mapData.xmlData().loadedTextures().getOrDefault("Texture_" + descriptor.trueIndex(), "Texture_" + descriptor.trueIndex());
 
-        ByteBuffer image = Allocator.alloc(content.length).put(content).flip();
+        ByteBuffer image = Allocator.alloc(descriptor.size()).put(fileBuffer.slice(fileBuffer.position(),descriptor.size())).flip();
+        fileBuffer.position(fileBuffer.position()+descriptor.size());
         var texture = new FileTexture(name, image, textureStart, fileBuffer.position(), descriptor);
         mapData.scene().textures().add(texture);
         mapData.scene().texturesByRealIndex().put(descriptor.trueIndex(), texture);

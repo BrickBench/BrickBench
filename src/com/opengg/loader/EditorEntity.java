@@ -49,6 +49,8 @@ import java.util.stream.Collectors;
  * named "lever_1" and path "Gizmo/Lever".
  */
 public interface EditorEntity<T extends EditorEntity<T>> {
+    static String UNIQUE_CHAR = "#";
+
     /**
      * Returns the name of this object
      * @return
