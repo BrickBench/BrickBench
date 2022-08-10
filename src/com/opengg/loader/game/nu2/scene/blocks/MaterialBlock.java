@@ -52,7 +52,7 @@ public class MaterialBlock extends DefaultFileBlock {
             fileBuffer.position(ptr + 0xB4 + 0x90);
             float fresnelMul = fileBuffer.getFloat();
             float fresnelCoeff = fileBuffer.getFloat();
-            material.setReflectivityColor(Util.packedIntToVector4f(0xFFFFFFFF));
+            material.setReflectivityColor(Util.packedIntToVector4f(0x1f1f1f1f));
             material.setSpecular(new Vector4f(exp, reflPower, fresnelMul, fresnelCoeff));
             
             fileBuffer.position(ptr + 0xB4 + 0x48);

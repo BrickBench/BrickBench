@@ -87,18 +87,18 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.7.1'
-    testImplementation  'com.formdev:flatlaf:2.3'
-    testImplementation  'com.formdev:flatlaf-intellij-themes:2.3'
+    testImplementation  'com.formdev:flatlaf:1.2'
+    testImplementation  'com.formdev:flatlaf-intellij-themes:1.2'
 
-    implementation 'com.formdev:flatlaf:2.3'
-    implementation 'com.formdev:flatlaf-extras:2.3'
-    implementation 'com.formdev:flatlaf-intellij-themes:2.3'
+    implementation 'com.formdev:flatlaf:1.2'
+    implementation 'com.formdev:flatlaf-extras:1.2'
+    implementation 'com.formdev:flatlaf-intellij-themes:1.2'
     implementation 'net.nikr:dds:1.0.0'
     implementation 'com.github.kwhat:jnativehook:2.2.2'
     implementation "org.kohsuke:github-api:1.122"
     implementation 'org.apache.commons:commons-lang3:3.11'
-    implementation 'commons-io:commons-io:2.8.0'
-    implementation "com.github.ben-manes.caffeine:caffeine:3.0.2"
+    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.1'
     implementation 'com.davidehrmann.vcdiff:vcdiff-core:0.1.1'
     implementation 'net.sourceforge.argparse4j:argparse4j:0.9.0'
     implementation 'org.reflections:reflections:0.10'
@@ -121,8 +121,8 @@ dependencies {
     implementation "org.lwjgl:lwjgl-meshoptimizer::$lwjglNatives"
     implementation "org.lwjgl:lwjgl-tinyfd::$lwjglNatives"
 
-    implementation 'net.java.dev.jna:jna:5.6.0'
-    implementation 'net.java.dev.jna:jna-platform:5.6.0'
+    implementation 'net.java.dev.jna:jna:5.12.1'
+    implementation 'net.java.dev.jna:jna-platform:5.12.1'
 
     implementation 'com.github.austinc:jnrepl:1.2'
 }

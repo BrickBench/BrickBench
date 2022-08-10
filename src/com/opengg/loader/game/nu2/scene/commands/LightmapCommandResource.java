@@ -37,7 +37,6 @@ public class LightmapCommandResource implements DisplayCommandResource<LightmapC
             ShaderController.setUniform("lightmap3", texture3.nativeTexture().getNow(null));
             ShaderController.setUniform("lightmap4", texture4.nativeTexture().getNow(null));
         }
-        ShaderController.setUniform("lightmapReady", true);
     }
 
     @Override

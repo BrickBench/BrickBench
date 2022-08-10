@@ -424,6 +424,7 @@ public class BrickBench extends GGApplication implements KeyboardListener, Mouse
     @Override
     public void setup() {
         reloadConfigFileData();
+        NativeCache.initialize();
 
         if (Boolean.parseBoolean(Configuration.get("discord-integration"))) {
             DiscordManager.startDiscord();

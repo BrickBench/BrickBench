@@ -74,26 +74,19 @@ void main() {
         varying_bitangent = normalize(model * vec4((bitangent.xyz * 2) - 1, 0)).xyz;
     }
     
-   /* if(vs_normal == vec3(0,0,0)){
-        varying_normal = vec3(0,0,0);
-    }
-    if(vs_normal == vec3(0,0,0)){
-        varying_normal = vec3(0,0,0);
-    }
-    if(vs_normal == vec3(0,0,0)){
-        varying_normal = vec3(0,0,0);
-    }}*/
-
-    vec4 reverse = model * vec4(position, 1.0f);
-    pos = reverse.xyz;
-    reverse.x = -reverse.x;
+    pos = (model * vec4(position, 1.0f)).xyz;
+    
+    vec3 reverse = vec3(-pos.x, pos.y, pos.z);
     if(billboardSize.x != 0 && billboardSize.y != 0){
         vec3 camRight= vec3(view[0][0], view[1][0], view[2][0]);
         vec3 camUp = vec3(view[0][1], view[1][1], view[2][1]);
-        pos = billboardCenter + camRight * pos.x * billboardSize.x + camUp * pos.y * billboardSize.y;
+        reverse = billboardCenter * vec3(-1,1,1) + camRight * reverse.x * billboardSize.x + camUp * reverse.y * billboardSize.y;
+        pos = reverse;
+        pos.x = -pos.x;
     }
 
-    gl_Position = projection * view * vec4(reverse.xyz, 1.0f);
+
+    gl_Position = projection * view * vec4(reverse, 1.0f);
 
     pipeColorSet0();
     pipeLightDirSet();

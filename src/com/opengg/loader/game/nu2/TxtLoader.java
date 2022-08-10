@@ -37,6 +37,15 @@ public class TxtLoader {
                 }
                 case "max_ter_groups" -> maxTerrainGroups = Integer.parseInt(line.split(" ")[1]);
                 case "max_ter_platforms" -> maxTerrainPlatforms = Integer.parseInt(line.split(" ")[1]);
+                case "settings_start" -> {
+                    while(!(line = scanner.nextLine().replaceAll("([/].*)", "").trim()).equals("settings_end")) {
+                        if(line.isBlank()) continue;
+                        var contents = line.replace("\"", "").split("[=\s]");
+                        switch (contents[0]){
+                            case "farclip" , "farclip_pc"-> mapData.txt().settingsMap().put("farclip",Float.valueOf(contents[1]));
+                        }
+                    }
+                }
             }
         }
     }
