@@ -61,8 +61,19 @@ public record DisplayList(String name, int index, int order, List<DisplayCommand
         }
 
         if(Boolean.parseBoolean(Configuration.get("wireframe"))) OpenGLRenderer.getOpenGLRenderer().setWireframe(true);
+
         ShaderController.setUniform("invertY", 0);
         ShaderController.setUniform("useLights", 0);
+        OpenGLRenderer.getOpenGLRenderer().setDepthTest(true);
+        OpenGLRenderer.getOpenGLRenderer().setDepthWrite(true);
+        OpenGLRenderer.getOpenGLRenderer().setDepthFunc(OpenGLRenderer.DepthTestFunction.LEQUAL);
+        OpenGLRenderer.getOpenGLRenderer().setWireframe(false);
+        OpenGLRenderer.getOpenGLRenderer().setAlphaBlendEnable(true);
+        OpenGLRenderer.getOpenGLRenderer().setBackfaceCulling(false);
+        OpenGLRenderer.getOpenGLRenderer().setAlphaBlendFunction(OpenGLRenderer.AlphaBlendFunction.ADD);
+        OpenGLRenderer.getOpenGLRenderer().setAlphaBlendSource(OpenGLRenderer.AlphaBlendSource.SRC_ALPHA,
+                OpenGLRenderer.AlphaBlendSource.ONE_MINUS_SRC_ALPHA);
+        ShaderController.setUniform("alphaCutoff", 0.1f);
 
         for(var command : commands){
             if(command.flags() == 0 || command.flags() == 3){

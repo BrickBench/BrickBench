@@ -17,6 +17,7 @@ public class RTLLightComponent extends EditorEntityRenderComponent {
         super(light, new SceneRenderUnit.UnitProperties().shaderPipeline("xFixOnly"));
         this.setPositionOffset(light.pos());
         this.setScaleOffset(0.1f);
+        this.setUpdateEnabled(false);
         this.setRotationOffset(Quaternionf.createYXZ(light.rot().normalize()));
 
         if (light.type() == RTLLight.LightType.DIRECTIONAL) {

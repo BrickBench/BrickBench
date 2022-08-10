@@ -206,6 +206,7 @@ public class TopBar extends JMenuBar {
         showLabels.setMnemonic(KeyEvent.VK_L);
         showLabels.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK));
 
+                
         var speedArea = new JMenu();
         speedArea.setText("Speed presets");
         speedArea.setMnemonic(KeyEvent.VK_S);
@@ -247,6 +248,18 @@ public class TopBar extends JMenuBar {
         alphaEmu.setMnemonic(KeyEvent.VK_A);
         alphaEmu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK));
 
+        var enhanced = makeByName("enhanced", createStandardMenuItem("Enable Enhanced Graphics", "enhanced-graphics",
+                """
+                        <html> Enable advanced graphics. <br> This enables advanced effects, such as specular highlights. </html>
+                        """));
+        enhanced.setMnemonic(KeyEvent.VK_E);
+
+        var skybox = makeByName("showSkybox", createStandardMenuItem("Show Skybox", "emulate-skybox",
+                """
+                        <html> Enable rendering of the skybox the same way it would render ingame. </html>
+                        """));
+        skybox.setMnemonic(KeyEvent.VK_B); 
+
         var wireframe = makeByName("wireframe", createStandardMenuItem("Show Wireframes", "wireframe",
                 """
                         <html> Sets the mesh renderer to use wireframes for static objects. </html>
@@ -260,6 +273,8 @@ public class TopBar extends JMenuBar {
         viewMenu.add(compact);
         viewMenu.add(wireframe);
         viewMenu.addSeparator();
+        viewMenu.add(enhanced);
+        viewMenu.add(skybox);
         viewMenu.add(showBoundingBoxes);
         viewMenu.add(depthEmu);
         viewMenu.add(alphaEmu);

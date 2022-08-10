@@ -1,25 +1,27 @@
 package com.opengg.loader.game.nu2.scene;
 
-import com.opengg.core.Configuration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.opengg.core.math.Vector3f;
+import com.opengg.core.math.util.Tuple;
 import com.opengg.core.render.GraphicsBuffer;
 import com.opengg.core.render.RenderEngine;
 import com.opengg.core.render.Renderable;
 import com.opengg.core.render.objects.DrawnObject;
 import com.opengg.core.render.shader.ShaderController;
-import com.opengg.core.render.shader.UniformContainer;
 import com.opengg.core.render.shader.VertexArrayBinding;
 import com.opengg.core.render.shader.VertexArrayFormat;
+import com.opengg.core.render.shader.UniformContainer;
 import com.opengg.loader.EditorEntity;
-import com.opengg.loader.Project;
 import com.opengg.loader.editor.EditorState;
 import com.opengg.loader.game.nu2.NU2MapData;
-import com.opengg.loader.game.nu2.scene.commands.DisplayCommand;
 import com.opengg.loader.game.nu2.rtl.RTLLight;
-import com.opengg.loader.loading.MapLoader;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.opengg.loader.game.nu2.scene.commands.DisplayCommand;
 
 public class GSCMesh implements GameRenderable<GSCMesh>{
     public final int address;
@@ -40,6 +42,8 @@ public class GSCMesh implements GameRenderable<GSCMesh>{
     Renderable renderedObject;
     public FileMaterial material;
     public VertexArrayFormat format;
+
+    public static Map<Vector3f, Tuple<List<ComputedLight>, List<ComputedLight>>> lightCache = new HashMap<>();
 
     public GSCMesh(int address, int vertexCount, int vertexSize, int vertexOffset, int vertexListID, int triangleCount,
                    int indexOffset, int indexListID, int useDynamicBuffer, int dynamicBuffer) {
@@ -64,6 +68,53 @@ public class GSCMesh implements GameRenderable<GSCMesh>{
 
         this.renderedObject = drawable;
     }
+
+    private Tuple<List<ComputedLight>, List<ComputedLight>> updateLights(){
+        var allLights = ((NU2MapData) EditorState.getActiveMap().levelData()).rtl().lights();
+
+        var ambientLights = new ArrayList<ComputedLight>();
+        var lights = new ArrayList<ComputedLight>();
+        var pos = ((UniformContainer.Matrix4fContainer) ShaderController.getUniform("model")).contents().getTranslation();
+        for(var light : allLights){
+            var distance = light.pos().distanceTo(pos);
+            if(light.falloff() > distance || light.type() == RTLLight.LightType.CAMDIR){
+                var influence = light.type() == RTLLight.LightType.CAMDIR ? 2.0f : Math.max((distance - light.distance())/(light.falloff() - light.distance()), 1);
+                if (light.type() == RTLLight.LightType.AMBIENT && ambientLights.size() < 3) {
+                    ambientLights.add(new ComputedLight(light, influence));
+                } else if (lights.size() < 3){
+                    lights.add(new ComputedLight(light, influence));
+                }
+            }
+        }
+
+        ambientLights.sort(Comparator.comparingDouble(c1 -> c1.score));
+        lights.sort(Comparator.comparingDouble(c1 -> c1.score));
+        Collections.reverse(lights);
+        Collections.reverse(ambientLights);
+       
+        return Tuple.of(ambientLights, lights);
+    }
+
+    private void useLights() {
+        var pos = ((UniformContainer.Matrix4fContainer) ShaderController.getUniform("model")).contents().getTranslation();
+        var cache = lightCache.computeIfAbsent(pos, p -> updateLights());
+
+        ShaderController.setUniform("LIGHTING_LIGHTS_COUNT", cache.y().size());
+        ShaderController.setUniform("ambientColor", cache.x().stream().map(a -> a.light().color().multiply(a.score() * a.light().multiplier())).reduce(new Vector3f(0), (a,b) -> a.add(b)));
+
+        for(int i = 0; i < cache.y().size() && i < 3; i++){
+            var light = cache.y().get(i);
+            if (light.light().type() == RTLLight.LightType.CAMDIR || light.light().type() == RTLLight.LightType.DIRECTIONAL) {
+                ShaderController.setUniform("light" + i + ".pos", light.light().rot());
+            } else {
+                ShaderController.setUniform("light" + i + ".pos", light.light().pos().subtract(pos));
+            }
+
+            ShaderController.setUniform("light" + i + ".color", light.light().color().multiply(light.score() * light.light().multiplier()));
+        }
+    }
+
+
 /*
     public void export() {
         var objName =  EditorState.getActiveMap().levelData().name() + "_" + this.name();
@@ -93,6 +144,8 @@ public class GSCMesh implements GameRenderable<GSCMesh>{
         }else{
             ShaderController.setUniform("muteColors", 0);
         }
+
+        useLights();
 
         ((DrawnObject)renderedObject).setFormat(format);
         renderedObject.render();
@@ -154,4 +207,6 @@ public class GSCMesh implements GameRenderable<GSCMesh>{
     public int hashCode() {
         return address;
     }
+
+    private record ComputedLight(RTLLight light, float score){}
 }

@@ -51,10 +51,8 @@ uniform vec2 billboardSize;
 void pipeColorSet0(){
     vec3 gammaMeshColor = pow(color.rgb, vec3(gamma));
     float meshAlpha = color.a;
-    if(globalUseVertexColor == 0 || LAYER0_COLORSET == 0){
+    if(LAYER0_COLORSET == 0){
         gammaMeshColor = vec3(1);
-    }
-    if(globalUseMeshTransparency == 0 || LAYER0_COLORSET == 0){
         meshAlpha = 1;
     }
 
@@ -84,7 +82,6 @@ void main() {
         pos = reverse;
         pos.x = -pos.x;
     }
-
 
     gl_Position = projection * view * vec4(reverse, 1.0f);
 

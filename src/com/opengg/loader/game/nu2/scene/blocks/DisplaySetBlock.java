@@ -108,7 +108,9 @@ public class DisplaySetBlock extends DefaultFileBlock {
                         yield new LightmapCommandResource(resourcePtr, type == 2, lm, lm2, lm3, lm4, mapData);
 
                     }
-                    default -> new UntypedCommandResource(resourcePtr, commandType);
+                    default -> {
+                        yield new UntypedCommandResource(resourcePtr, commandType);
+                    }
                 };
                 mapData.scene().uniqueRenderCommands().put(resourcePtr, nextRenderCommand);
             }

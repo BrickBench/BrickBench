@@ -5,10 +5,7 @@ struct LegoLight{
 
 layout(set = 6, binding = 3) unwrap uniform BrickBenchSettings{
     int globalApplyLights;
-    int globalUseLightmaps;
-    int globalUseDynamicLights;
-    int globalUseMeshTransparency;
-    int globalUseVertexColor;
+    int globalEnhancedGraphics;
     int muteColors;
     int lightmapReady;
 };
