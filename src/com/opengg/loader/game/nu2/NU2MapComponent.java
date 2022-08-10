@@ -116,7 +116,7 @@ public class NU2MapComponent extends MapComponent<NU2MapData> {
         staticMesh.removeAll();
         mapData.scene().displayLists().forEach(s ->
                 staticMesh.attach(new EditorEntityRenderComponent(s, s,
-                        new SceneRenderUnit.UnitProperties().shaderPipeline("ttNormal"))));
+                        new SceneRenderUnit.UnitProperties().shaderPipeline("ttNormal").manualPriority(-2))));
 
     }
 

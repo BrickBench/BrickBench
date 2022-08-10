@@ -6,6 +6,7 @@ import com.opengg.loader.editor.tabs.ConsolePanel;
 import com.opengg.loader.editor.windows.InitialProjectWindow;
 import com.opengg.loader.editor.windows.ProjectCreationDialog;
 import com.opengg.loader.game.nu2.scene.IABLComponent;
+import com.opengg.loader.game.nu2.scene.ParallaxComponent;
 import com.opengg.loader.game.nu2.scene.SceneFileLoader;
 import com.opengg.loader.internal.X11;
 import com.opengg.loader.loading.ProjectIO;
@@ -244,7 +245,8 @@ public class BrickBench extends GGApplication implements KeyboardListener, Mouse
             Map.entry("show-dynamic-lights", "true"),
             Map.entry("use-rotation-platform", "true"),
             Map.entry("show-lights", "true"),
-            Map.entry("cache-textures", "true")
+            Map.entry("cache-textures", "true"),
+            Map.entry("enhanced-graphics", "true")
         );
 
         try {
@@ -396,7 +398,8 @@ public class BrickBench extends GGApplication implements KeyboardListener, Mouse
         IABLComponent.SHOW = Boolean.parseBoolean(Configuration.get("show-specobj-bounds"));
         FileMaterial.ENABLE_ALPHA_EMULATION = Boolean.parseBoolean(Configuration.get("emulate-alpha"));
         FileMaterial.ENABLE_DEPTH_EMULATION = Boolean.parseBoolean(Configuration.get("emulate-zbuffer"));
-
+        ParallaxComponent.ENABLE_PARALLAX = Boolean.parseBoolean(Configuration.get("emulate-skybox"));
+        
         if (Boolean.parseBoolean(Configuration.getConfigFile("editor.ini").getConfig("compact-mode"))) {
             window.left.setVisible(false);
             window.right.setVisible(false);
@@ -412,6 +415,7 @@ public class BrickBench extends GGApplication implements KeyboardListener, Mouse
         window.validate();
 
         OpenGG.asyncExec(() -> {
+            ShaderController.setUniform("globalEnhancedGraphics", Boolean.parseBoolean(Configuration.getConfigFile("editor.ini").getConfig("enhanced-graphics")));
             ShaderController.setUniform("globalApplyLights", Boolean.parseBoolean(Configuration.getConfigFile("editor.ini").getConfig("show-lights")));
             ShaderController.setUniform("globalUseLightmaps", Boolean.parseBoolean(Configuration.getConfigFile("editor.ini").getConfig("show-shadow-maps")));
             ShaderController.setUniform("globalUseDynamicLights", Boolean.parseBoolean(Configuration.getConfigFile("editor.ini").getConfig("show-dynamic-lights")));

@@ -7,19 +7,20 @@ import com.opengg.core.render.Renderable;
 import com.opengg.core.render.shader.CommonUniforms;
 
 public class ParallaxComponent implements Renderable {
+    public static boolean ENABLE_PARALLAX = true;
+
     GameModel model;
     float farclip = 1;
+
     public ParallaxComponent(GameModel model,float farclip){
-        setParallax(model,farclip);
-    }
-    public void setParallax(GameModel model,float farclip){
         this.model = model;
-        this.farclip = farclip;
+        this.farclip = farclip;    
     }
+
     @Override
     public void render() {
         float scale = farclip * 0.1f*0.5f;
-        if(model != null){
+        if(model != null && ENABLE_PARALLAX){
             CommonUniforms.setModel(Matrix4f.IDENTITY.translate(RenderEngine.getCurrentView().getPosition().multiply(new Vector3f(-1,1,1))).scale(scale,scale,scale));
             model.render();
         }

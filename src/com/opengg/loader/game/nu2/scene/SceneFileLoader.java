@@ -30,6 +30,7 @@ public class SceneFileLoader {
         int nu20Start;
 
         FileTexture.FileTextureCache.restartIconLoader();
+        GSCMesh.lightCache.clear();
 
         int firstValue = fileBuffer.getInt();
         if ((firstValue == 0x3032554e

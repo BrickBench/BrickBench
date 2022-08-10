@@ -43,16 +43,14 @@ public class MaterialBlock extends DefaultFileBlock {
             fileBuffer.position(ptr + 0xB4);
             material.setTextureFlags(fileBuffer.getInt());
 
-            fileBuffer.position(ptr + 0xB4 + 0x60);
-            float exp = fileBuffer.getFloat();
-
             fileBuffer.position(ptr + 0xB4 + 0x78);
             float reflPower = fileBuffer.getFloat();
-
+            float exp = fileBuffer.getFloat();
+            
             fileBuffer.position(ptr + 0xB4 + 0x90);
             float fresnelMul = fileBuffer.getFloat();
             float fresnelCoeff = fileBuffer.getFloat();
-            material.setReflectivityColor(Util.packedIntToVector4f(0x1f1f1f1f));
+            material.setReflectivityColor(Util.packedIntToVector4f(0x7f7f7f7f));
             material.setSpecular(new Vector4f(exp, reflPower, fresnelMul, fresnelCoeff));
             
             fileBuffer.position(ptr + 0xB4 + 0x48);
