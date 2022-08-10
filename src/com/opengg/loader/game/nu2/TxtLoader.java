@@ -13,40 +13,41 @@ public class TxtLoader {
 
     public static void load(ByteBuffer fileData, NU2MapData mapData){
         var string = new String(fileData.array());
-        var scanner = new Scanner(string);
+        try(var scanner = new Scanner(string)) {
+            while(scanner.hasNextLine()){
+                var line = scanner.nextLine();
+                line = line.replaceAll("(//.*)", "").trim();
 
-        while(scanner.hasNextLine()){
-            var line = scanner.nextLine();
-            line = line.replaceAll("(//.*)", "").trim();
+                switch (line.split("[\s=]")[0]){
+                    case "door_start" -> {
+                        Spline doorSpline = null;
+                        String targetMap = "Unknown";
 
-            switch (line.split(" ")[0]){
-                case "door_start" -> {
-                    Spline doorSpline = null;
-                    String targetMap = "Unknown";
-
-                    while(!(line = scanner.nextLine().replaceAll("([/].*)", "").trim()).equals("door_end")) {
-                        if(line.isBlank()) continue;
-                        var contents = line.replace("\"", "").split("[=\s]");
-                        switch (contents[0]){
-                            case "spline" -> doorSpline =
-                                    mapData.getSplineByName(contents[1].toLowerCase()).orElse(null);
-                            case "level" -> targetMap = contents[1];
+                        while(!(line = scanner.nextLine().replaceAll("([/].*)", "").trim()).equals("door_end")) {
+                            if(line.isBlank()) continue;
+                            var contents = line.replace("\"", "").split("[=\s]");
+                            switch (contents[0]){
+                                case "spline" -> doorSpline =
+                                        mapData.getSplineByName(contents[1].toLowerCase()).orElse(null);
+                                case "level" -> targetMap = contents[1];
+                            }
                         }
+                        if(doorSpline != null) mapData.txt().doors().add(new Door(doorSpline, targetMap));
                     }
-                    if(doorSpline != null) mapData.txt().doors().add(new Door(doorSpline, targetMap));
-                }
-                case "max_ter_groups" -> maxTerrainGroups = Integer.parseInt(line.split(" ")[1]);
-                case "max_ter_platforms" -> maxTerrainPlatforms = Integer.parseInt(line.split(" ")[1]);
-                case "settings_start" -> {
-                    while(!(line = scanner.nextLine().replaceAll("([/].*)", "").trim()).equals("settings_end")) {
-                        if(line.isBlank()) continue;
-                        var contents = line.replace("\"", "").split("[=\s]");
-                        switch (contents[0]){
-                            case "farclip" , "farclip_pc"-> mapData.txt().settingsMap().put("farclip",Float.valueOf(contents[1]));
+                    case "max_ter_groups" -> maxTerrainGroups = Integer.parseInt(line.split(" ")[1]);
+                    case "max_ter_platforms" -> maxTerrainPlatforms = Integer.parseInt(line.split(" ")[1]);
+                    case "settings_start" -> {
+                        while(!(line = scanner.nextLine().replaceAll("([/].*)", "").trim()).equals("settings_end")) {
+                            if(line.isBlank()) continue;
+                            var contents = line.replace("\"", "").split("[=\s]");
+                            switch (contents[0]){
+                                case "farclip" , "farclip_pc"-> mapData.txt().settingsMap().put("farclip",Float.valueOf(contents[1]));
+                            }
                         }
                     }
                 }
             }
         }
+
     }
 }
