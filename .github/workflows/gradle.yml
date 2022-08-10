@@ -24,11 +24,14 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.PERSONAL_REPO_KEY }}
     steps:
       - uses: actions/checkout@v2
+      - uses: ilammy/msvc-dev-cmd@v1.4.1
 
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
           java-version: 18
+      - name: Build Updater
+        run: cl updater/Updater.cpp /Fe:Updater /std:c++latest
 
       - name: Build
         run: ./gradlew jpackage -PisCI
