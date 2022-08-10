@@ -1,6 +1,7 @@
 package com.opengg.loader.game.nu2;
 
 import com.opengg.core.render.SceneRenderUnit;
+import com.opengg.core.world.components.RenderComponent;
 import com.opengg.core.world.components.WorldObject;
 import com.opengg.loader.components.EditorEntityRenderComponent;
 import com.opengg.loader.game.nu2.ai.LocatorComponent;
@@ -10,6 +11,7 @@ import com.opengg.loader.game.nu2.ai.CreatureSpawnComponent;
 import com.opengg.loader.game.nu2.ai.WorldTriggerComponent;
 import com.opengg.loader.game.nu2.gizmo.GizmoManagerComponent;
 import com.opengg.loader.game.nu2.rtl.RTLLightComponent;
+import com.opengg.loader.game.nu2.scene.ParallaxComponent;
 import com.opengg.loader.game.nu2.scene.SceneFileLoader;
 import com.opengg.loader.game.nu2.scene.SpecialObjectComponent;
 import com.opengg.loader.game.nu2.scene.SplineComponent;
@@ -33,6 +35,7 @@ public class NU2MapComponent extends MapComponent<NU2MapData> {
     private final WorldObject aiSpawn = new WorldObject("aiSpawn");
     private final WorldObject staticMesh = new WorldObject("staticMesh");
     private final WorldObject rtlLights = new WorldObject("rtlLights");
+    private final WorldObject skybox = new WorldObject("skybox");
 
     private NU2MapData mapData;
     public static List<byte[]> connections = new ArrayList<>();
@@ -45,7 +48,7 @@ public class NU2MapComponent extends MapComponent<NU2MapData> {
 
         this.attach(terrainGroups).attach(walls).attach(triggers).attach(portalSet).attach(doors)
                 .attach(gizmos).attach(splines).attach(specialObjects).attach(aiLocators)
-                .attach(aiSpawn).attach(staticMesh).attach(rtlLights);
+                .attach(aiSpawn).attach(staticMesh).attach(rtlLights).attach(skybox);
 
         updateSceneFile();
         updateTextData();
@@ -95,6 +98,14 @@ public class NU2MapComponent extends MapComponent<NU2MapData> {
     public void updateSpecialObjects(){
         specialObjects.removeAll();
         mapData.scene().specialObjects().forEach(specialObject -> specialObjects.attach(new SpecialObjectComponent(specialObject, mapData)));
+
+        var parallax = mapData.getSpecialObjectByName("parallax");
+        skybox.removeAll();
+        if(parallax.isPresent()){
+            skybox.attach(new RenderComponent(new ParallaxComponent(parallax.get().model(),
+                    mapData.txt().settingsMap().getOrDefault("farclip",1f)),
+                    new SceneRenderUnit.UnitProperties().shaderPipeline("ttNormal")));
+        }
 
         updateTerrain();
         updateAIData();

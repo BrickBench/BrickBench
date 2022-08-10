@@ -20,7 +20,6 @@ import com.opengg.loader.loading.MapLoader;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GSCMesh implements GameRenderable<GSCMesh>{
     public final int address;
@@ -40,9 +39,7 @@ public class GSCMesh implements GameRenderable<GSCMesh>{
 
     Renderable renderedObject;
     public FileMaterial material;
-
-    private VertexArrayFormat format;
-    private List<RTLLight> lights;
+    public VertexArrayFormat format;
 
     public GSCMesh(int address, int vertexCount, int vertexSize, int vertexOffset, int vertexListID, int triangleCount,
                    int indexOffset, int indexListID, int useDynamicBuffer, int dynamicBuffer) {
@@ -84,73 +81,23 @@ public class GSCMesh implements GameRenderable<GSCMesh>{
 
     @Override
     public void render() {
-        if(this.material != FileMaterial.currentMaterial){
-            this.material = FileMaterial.currentMaterial;
-            var attributes = new ArrayList<>(material.getArrayBindings());
-            if(MapLoader.CURRENT_GAME_VERSION != Project.GameVersion.LSW_TCS && Configuration.getBoolean("use-backup-lij-vao")){
-                fixForLIJBatman(attributes);
-            }
-
-            this.format = new VertexArrayFormat(List.of(new VertexArrayBinding(0, vertexSize, 0, attributes)));
+        if (material != FileMaterial.currentMaterial) {
+            material = FileMaterial.currentMaterial;
+            format = new VertexArrayFormat(List.of(new VertexArrayBinding(0, vertexSize, 0, FileMaterial.currentMaterial.getArrayBindings())));
         }
 
         if(EditorState.CURRENT.shouldHighlight && EditorState.getSelectedObject().get() instanceof GSCMesh obj && obj != this) {
             return;
-        }else if(material.muteMaterial()) {
+        }else if(FileMaterial.currentMaterial.muteMaterial()) {
             ShaderController.setUniform("muteColors", 1);
         }else{
             ShaderController.setUniform("muteColors", 0);
         }
 
-        ((DrawnObject)renderedObject).setFormat(this.format);
+        ((DrawnObject)renderedObject).setFormat(format);
         renderedObject.render();
-
-        ShaderController.setUniform("lightmapReady", false);
     }
 
-
-    private void fixForLIJBatman(List<VertexArrayBinding.VertexArrayAttribute> src){
-        var texcoordLoc = switch (vertexSize){
-            case 44 -> 28;
-            case 40 -> 24;
-            case 36 -> 20;
-            case 32 -> 24;
-            case 28 -> 20;
-            //case 24 -> 24;
-            case 48 -> 24;
-            case 52 -> 28;
-            case 56 -> 32;
-            case 60 -> 32;
-            case 64 -> 32;
-            case 72 -> 32;
-            default -> {
-                // GGConsole.warn("Encountered wacky vertex size of " + vertexSize);
-                yield 24;
-            }
-        };
-
-        var lmcoordLoc = switch (vertexSize){
-            case 44 -> 36;
-            case 40 -> 32;
-            case 36 -> 28;
-            case 32 -> 32;
-            case 28 -> 28;
-            case 24 -> 24;
-            case 48 -> 32;
-            case 52 -> 36;
-            case 56 -> 40;
-            case 60 -> 40;
-            case 64 -> 48;
-            case 72 -> 56;
-            default -> {
-                //GGConsole.warn("Encountered wacky vertex size of " + vertexSize);
-                yield 24;
-            }
-        };
-
-        src.removeIf(a ->a.name().equals("vs_uv3") || a.name().equals("vs_uv0"));
-        src.add(new VertexArrayBinding.VertexArrayAttribute("vs_uv0", 2 * 4, VertexArrayBinding.VertexArrayAttribute.Type.FLOAT2, texcoordLoc));
-    }
 
     @Override
     public String toString() {

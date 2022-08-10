@@ -172,9 +172,9 @@ public record NU2MapData(String name,
         }
     }
 
-    public record TxtData(List<Door> doors){
+    public record TxtData(List<Door> doors,Map<String,Float> settingsMap){
         public TxtData(){
-            this(new ArrayList<>());
+            this(new ArrayList<>(),new HashMap<>());
         }
     }
 

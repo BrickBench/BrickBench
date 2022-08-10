@@ -247,11 +247,6 @@ public class TopBar extends JMenuBar {
         alphaEmu.setMnemonic(KeyEvent.VK_A);
         alphaEmu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK));
 
-        var backup = makeByName("lijBackup", createStandardMenuItem("Use Backup LIJ/Batman Vertex Format", "use-backup-lij-vao",
-                """
-                        <html> Enables the backup vertex formatting for LIJ/Batman. This can remove most texturing/lightmap issues in these games, but may introduce others. <br>
-                         Keep this turned off unless the object has wrong shadows or lines instead of textures.</html>
-                        """));
         var wireframe = makeByName("wireframe", createStandardMenuItem("Show Wireframes", "wireframe",
                 """
                         <html> Sets the mesh renderer to use wireframes for static objects. </html>
@@ -268,7 +263,6 @@ public class TopBar extends JMenuBar {
         viewMenu.add(showBoundingBoxes);
         viewMenu.add(depthEmu);
         viewMenu.add(alphaEmu);
-        viewMenu.add(backup);
 
         var importMap2 = makeByName("importMap", new JMenuItem("Import Map/Area"));
         importMap2.addActionListener(a -> {
