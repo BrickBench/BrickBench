@@ -17,8 +17,11 @@ public class TxtLoader {
             while(scanner.hasNextLine()){
                 var line = scanner.nextLine();
                 line = line.replaceAll("(//.*)", "").trim();
-
-                switch (line.split("[\s=]")[0]){
+                var tokens = line.split("[\s=]");
+                switch (tokens[0]){
+                    case "farclip" -> {
+                        mapData.txt().settingsMap().put("farclip",Float.valueOf(tokens[1]));
+                    }
                     case "door_start" -> {
                         Spline doorSpline = null;
                         String targetMap = "Unknown";

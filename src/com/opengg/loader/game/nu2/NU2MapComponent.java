@@ -101,7 +101,7 @@ public class NU2MapComponent extends MapComponent<NU2MapData> {
 
         var parallax = mapData.getSpecialObjectByName("parallax");
         skybox.removeAll();
-        if(parallax.isPresent()){
+        if(parallax.isPresent() && mapData.txt().settingsMap().containsKey("farclip")){
             skybox.attach(new RenderComponent(new ParallaxComponent(parallax.get().model(),
                     mapData.txt().settingsMap().getOrDefault("farclip",1f)),
                     new SceneRenderUnit.UnitProperties().shaderPipeline("ttNormal")));
