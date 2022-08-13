@@ -6,6 +6,7 @@ import com.opengg.core.Configuration;
 import com.opengg.core.console.GGConsole;
 import com.opengg.core.engine.Resource;
 import com.opengg.loader.FileUtil;
+import com.opengg.loader.Project.GameVersion;
 import com.opengg.loader.BrickBench;
 import com.opengg.loader.editor.EditorTheme;
 import com.opengg.loader.editor.components.FileSelectField;
@@ -20,6 +21,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 public class SettingsDialog extends JDialog {
 
@@ -212,10 +214,16 @@ public class SettingsDialog extends JDialog {
 
     private void useHookPanel(){
         resetPanel();
+        
+        Arrays.stream(GameVersion.values()).filter(v -> v.EXECUTABLE != null)
+            .forEach(v -> {
+                var hook = new JTextField(Configuration.get(v.SHORT_NAME + "-hook-executable-name"));
+                hook.addActionListener(a -> Configuration.getConfigFile("editor.ini").writeConfig(v.SHORT_NAME + "-hook-executable-name", hook.getText()));
+                hook.setToolTipText("Sets the " + v.SHORT_NAME.toUpperCase() + " executable name to hook into.");
+                
+                addItem(v.SHORT_NAME.toUpperCase() + " hook executable name", hook);
+            });
 
-        var hook = new JTextField(Configuration.get("hook-executable-name"));
-        hook.addActionListener(a -> Configuration.getConfigFile("editor.ini").writeConfig("hook-executable-name", hook.getText()));
-        hook.setToolTipText("Sets the TCS executable name to hook into.");
 
         var alphaOrderMaps = new JCheckBox();
         alphaOrderMaps.setSelected(Boolean.parseBoolean(Configuration.getConfigFile("editor.ini").getConfig("alphabetical-order-hook-map-list")));
@@ -224,7 +232,6 @@ public class SettingsDialog extends JDialog {
         alphaOrderMaps.setToolTipText("Sets if the list in the dropdown for maps in the hook should be in game order or alphabetical order.");
 
 
-        addItem("TCS hook executable name", hook);
         addCompactItem("Map list in alphabetical order", alphaOrderMaps);
 
         this.settingsPanel.validate();

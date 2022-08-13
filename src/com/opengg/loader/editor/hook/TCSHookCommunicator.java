@@ -3,6 +3,7 @@ package com.opengg.loader.editor.hook;
 import com.opengg.core.Configuration;
 import com.opengg.core.console.GGConsole;
 import com.opengg.core.math.Vector3f;
+import com.opengg.loader.editor.hook.TCSHookManager.GameExecutable;
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.*;
@@ -12,6 +13,8 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class TCSHookCommunicator {
+    private final GameExecutable executable;
+
     private WinNT.HANDLE process;
     private String executablePath;
     private String directory;
@@ -22,12 +25,20 @@ public class TCSHookCommunicator {
 
     private Map<String, Integer> addresses = new HashMap<>();
 
+    public TCSHookCommunicator(TCSHookManager.GameExecutable executable) {
+        this.executable = executable;
+    }
+
+    public GameExecutable getExecutable() {
+        return executable;
+    }
+
     public boolean attemptHook() {
         Tlhelp32.PROCESSENTRY32 entry = new Tlhelp32.PROCESSENTRY32();
         WinNT.HANDLE snapshot = Kernel32.INSTANCE.CreateToolhelp32Snapshot(Tlhelp32.TH32CS_SNAPPROCESS, null);
         if(Kernel32.INSTANCE.Process32First(snapshot, entry)){
             while (Kernel32.INSTANCE.Process32Next(snapshot, entry)){
-                if(new String(entry.szExeFile).trim().equals(Configuration.get("hook-executable-name"))){
+                if(new String(entry.szExeFile).trim().equals(Configuration.get(executable.GAME.SHORT_NAME + "-hook-executable-name"))){
                     WinNT.HANDLE process = Kernel32.INSTANCE.OpenProcess(WinNT.PROCESS_ALL_ACCESS, false, entry.th32ProcessID.intValue());
                     if(process != null){
                         Memory characterPosValue = new Memory(Kernel32.MAX_PATH);
@@ -46,7 +57,14 @@ public class TCSHookCommunicator {
         return false;
     }
 
-    public boolean checkForValidityAndReaquirePointers(){
+    public boolean checkForValidityAndReaquirePointers() {
+        return switch (this.executable) {
+            case LIJ1_GOG -> checkForValidityAndReaquirePointersLIJ();
+            case TCS_GOG, TCS_STEAM -> checkForValidityAndReaquirePointersTCS();
+        };
+    }
+
+    private boolean checkForValidityAndReaquirePointersTCS(){
         if(Kernel32.INSTANCE.WaitForSingleObject(process, 0) != WinError.WAIT_TIMEOUT){
             return false;
         }
@@ -68,7 +86,8 @@ public class TCSHookCommunicator {
 
         return true;
     }
-    public boolean checkForValidityAndReaquirePointersLIJ(){
+
+    private boolean checkForValidityAndReaquirePointersLIJ(){
         if(Kernel32.INSTANCE.WaitForSingleObject(process, 0) != WinError.WAIT_TIMEOUT){
             return false;
         }
@@ -155,7 +174,14 @@ public class TCSHookCommunicator {
         return new String(mapName.getByteArray(0, 128)).trim();
     }
 
-    public List<TCSHookPanel.AIMessage> getAIMessages(){
+    public List<TCSHookPanel.AIMessage> getAIMessages() {
+        return switch (this.executable) {
+            case LIJ1_GOG -> getAIMessagesLIJ();
+            case TCS_GOG, TCS_STEAM -> getAIMessagesTCS();
+        };
+    }
+
+    private List<TCSHookPanel.AIMessage> getAIMessagesTCS(){
         Memory mem = new Memory(8);
         Pointer pointer2 = new Pointer(0x95df5c+0x10);
         if(!Kernel32.INSTANCE.ReadProcessMemory(process, pointer2, mem, 8, null)){
@@ -184,7 +210,8 @@ public class TCSHookCommunicator {
         }
         return list;
     }
-    public List<TCSHookPanel.AIMessage> getAIMessagesLIJ(){
+
+    private List<TCSHookPanel.AIMessage> getAIMessagesLIJ(){
         Memory mem2 = new Memory(4);
         Pointer pointer3 = new Pointer(0xad25b4);
         if(!Kernel32.INSTANCE.ReadProcessMemory(process, pointer3, mem2, 8, null)){
@@ -229,7 +256,14 @@ public class TCSHookCommunicator {
         }
     }
 
-    public void setTargetMap(int id){
+    public void setTargetMap(int id) {
+        switch (this.executable) {
+            case TCS_STEAM, TCS_GOG -> setTargetMapTCS(id);
+            case LIJ1_GOG -> setTargetMapLIJ(id);
+        }
+    }
+
+    private void setTargetMapTCS(int id){
         Pointer levelDataStartPtr = new Pointer(0x00951b98);//0x00951b78, 0x00951b98
         Memory levelDataStart = new Memory(4);
         Kernel32.INSTANCE.ReadProcessMemory(process, levelDataStartPtr, levelDataStart, 4, null);
@@ -247,13 +281,29 @@ public class TCSHookCommunicator {
 
         Kernel32.INSTANCE.WriteProcessMemory(process, loadLevelPtr, enableFlag, 4, null);
     }
-    public void resetDoor(){
+
+    public void resetDoor() {
+        switch (this.executable) {
+            case TCS_STEAM, TCS_GOG -> resetDoorTCS();
+            case LIJ1_GOG -> resetDoorLIJ();
+        }
+    }
+
+    public void setResetBit() {
+        switch (this.executable) {
+            case TCS_STEAM, TCS_GOG -> setResetBitTCS();
+            case LIJ1_GOG -> setResetBitLIJ();
+        }
+    }
+
+    public void resetDoorTCS(){
         Memory newTarget = new Memory(1);
         newTarget.setByte(0, (byte)0);
         Pointer newLevelDataPtr = new Pointer(0x009513d8);
         Kernel32.INSTANCE.WriteProcessMemory(process, newLevelDataPtr, newTarget, 1, null);
     }
-    public void setResetBit(){
+
+    public void setResetBitTCS(){
         Memory newTarget2 = new Memory(4);
         newTarget2.setInt(0, -1);
         Pointer newLevelDataPtr2 = new Pointer(0x803784);
@@ -269,32 +319,32 @@ public class TCSHookCommunicator {
         Kernel32.INSTANCE.WriteProcessMemory(process, newLevelDataPtr, newTarget, 4, null);
     }
 
-    public void resetDoorLIJ(){
+    private void resetDoorLIJ(){
         Memory newTarget = new Memory(1);
         newTarget.setByte(0, (byte)0);
         Pointer newLevelDataPtr = new Pointer(0x00accd90);
         Kernel32.INSTANCE.WriteProcessMemory(process, newLevelDataPtr, newTarget, 1, null);
     }
-    public void setResetLIJ(){
+
+    private void setResetBitLIJ(){
         Memory newTarget2 = new Memory(4);
         newTarget2.setInt(0, -1);
         Pointer newLevelDataPtr2 = new Pointer(0x9367e4);
         Kernel32.INSTANCE.WriteProcessMemory(process, newLevelDataPtr2, newTarget2, 4, null);
+
         try {
             Thread.sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        /*Memory newTarget3 = new Memory(4);
-        newTarget2.setInt(0, -1);
-        Pointer rbitptr = new Pointer(0xaab277);
-        Kernel32.INSTANCE.WriteProcessMemory(process, rbitptr, newTarget3, 4, null);*/
+
         Memory newTarget = new Memory(4);
         newTarget.setInt(0, 1);
         Pointer newLevelDataPtr = new Pointer(0xacc7a8);
         Kernel32.INSTANCE.WriteProcessMemory(process, newLevelDataPtr, newTarget, 4, null);
     }
-    public void setTargetMapLIJ(int id){
+
+    private void setTargetMapLIJ(int id){
         Pointer levelDataStartPtr = new Pointer(0xacc91c);//0x00951b78, 0x00951b98
         Memory levelDataStart = new Memory(4);
         Kernel32.INSTANCE.ReadProcessMemory(process, levelDataStartPtr, levelDataStart, 4, null);
@@ -313,7 +363,7 @@ public class TCSHookCommunicator {
         Kernel32.INSTANCE.WriteProcessMemory(process, loadLevelPtr, enableFlag, 4, null);
     }
 
-
+/*
     public Vector3f getCameraPosition(){
         Pointer camPtr = new Pointer(0x008021b4);
         Memory camStart = new Memory(4);
@@ -333,7 +383,7 @@ public class TCSHookCommunicator {
         var orientation = readVector3f(camAngle);
         return orientation;
         // return new Vector3f(orientation.x, orientation.y, 0);
-    }
+    }*/
 
     public String encodeHexString(byte[] byteArray) {
         StringBuilder hexStringBuffer = new StringBuilder();
@@ -343,7 +393,14 @@ public class TCSHookCommunicator {
         return hexStringBuffer.toString();
     }
 
-    public List<HookCharacter> getAllCharacters(){
+    public List<HookCharacter> getAllCharacters() {
+        return switch (this.executable) {
+            case LIJ1_GOG -> getAllCharactersLIJ();
+            case TCS_STEAM, TCS_GOG -> getAllCharactersTCS();
+        };
+    }
+
+    public List<HookCharacter> getAllCharactersTCS(){
         Pointer listAddr = new Pointer(mapAddress + 10636);
         Memory listPtr = new Memory(4);
         Kernel32.INSTANCE.ReadProcessMemory(process, listAddr, listPtr, 4, null);

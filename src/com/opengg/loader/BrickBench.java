@@ -51,6 +51,7 @@ import com.opengg.core.world.WorldEngine;
 import com.opengg.core.world.components.Component;
 import com.opengg.core.world.components.LightComponent;
 import com.opengg.core.world.components.WorldObject;
+import com.opengg.loader.Project.GameVersion;
 import com.opengg.loader.components.*;
 import com.opengg.loader.editor.windows.SplashScreen;
 import com.opengg.loader.editor.*;
@@ -234,7 +235,6 @@ public class BrickBench extends GGApplication implements KeyboardListener, Mouse
             Map.entry("sensitivity", "0.5"),
             Map.entry("laf", "Flat Dark"),
             Map.entry("fov", "90"),
-            Map.entry("hook-executable-name", "LEGOStarWarsSaga.exe"),
             Map.entry("use-backup-lij-vao", "true"),
             Map.entry("autodelete-ai-pak", "true"),
             Map.entry("show-shadow-maps", "true"),
@@ -246,7 +246,9 @@ public class BrickBench extends GGApplication implements KeyboardListener, Mouse
             Map.entry("use-rotation-platform", "true"),
             Map.entry("show-lights", "true"),
             Map.entry("cache-textures", "true"),
-            Map.entry("enhanced-graphics", "true")
+            Map.entry("enhanced-graphics", "true"),
+            Map.entry(GameVersion.LSW_TCS.SHORT_NAME + "-hook-executable-name", GameVersion.LSW_TCS.EXECUTABLE),
+            Map.entry(GameVersion.LIJ1.SHORT_NAME + "-hook-executable-name", GameVersion.LIJ1.EXECUTABLE)
         );
 
         try {
@@ -343,7 +345,7 @@ public class BrickBench extends GGApplication implements KeyboardListener, Mouse
                 } else if (s.equals("CLOSE")) {
                     exit();
                 } else if (s.equals("HOOK")) {
-                    TCSHookManager.beginHook();
+                    //TCSHookManager.beginHook();
                 } else {
                     loadNewProject(Path.of(s));
                 }

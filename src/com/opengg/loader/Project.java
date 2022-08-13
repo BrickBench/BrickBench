@@ -36,9 +36,9 @@ public record Project(boolean isProject,
      * Therefore, the exactness of the game used in the current project only works in the context of a non-readonly project.
      */
     public enum GameVersion {
-        LIJ1(NU2, "lij1", "Lego Indiana Jones 1"),
+        LIJ1(NU2, "lij1", "Lego Indiana Jones 1", "LEGOIndianaJones.exe"),
         LB1(NU2, "lb1", "Lego Batman"),
-        LSW_TCS(NU2, "lsw-tcs", "Lego Star Wars: The Complete Saga"),
+        LSW_TCS(NU2, "lsw-tcs", "Lego Star Wars: The Complete Saga", "LEGOStarWarsSaga.exe"),
 
         LHP1_4(NXG, "lhp1-4", "Lego Harry Potter: Years 1-4"),
         LSW3(NXG, "lsw3", "Lego Star Wars 3: The Clone Wars");
@@ -55,7 +55,12 @@ public record Project(boolean isProject,
          * The user-readable name for this game.
          */
         public final String NAME;
-        GameVersion(EngineVersion engine, String shortName, String name) { ENGINE = engine; SHORT_NAME = shortName; NAME = name; };
+        /**
+         * The executable name for this game.
+         */
+        public final String EXECUTABLE;
+        GameVersion(EngineVersion engine, String shortName, String name) { this(engine, shortName, name, null); };
+        GameVersion(EngineVersion engine, String shortName, String name, String executable) { ENGINE = engine; SHORT_NAME = shortName; NAME = name; EXECUTABLE = executable; };
     }
 
     /**

@@ -5,6 +5,7 @@ import com.opengg.core.math.Vector3f;
 import com.opengg.core.util.SystemUtil;
 import com.opengg.loader.BrickBench;
 import com.opengg.loader.SwingUtil;
+import com.opengg.loader.Project.GameVersion;
 import com.opengg.loader.components.HookCharacterManager;
 import com.opengg.loader.editor.EditorState;
 
@@ -28,13 +29,13 @@ public class TCSHookManager {
         return currentHook != null;
     }
 
-    public static void beginHook(){
+    public static void beginHook(GameExecutable executable){
         if (SystemUtil.IS_LINUX) {
             SwingUtil.showErrorAlert("This feature is currently not available on Linux");
             return;
         }
 
-        var hook = new TCSHookCommunicator();
+        var hook = new TCSHookCommunicator(executable);
         var success = hook.attemptHook();
 
         if (success) {
@@ -58,7 +59,7 @@ public class TCSHookManager {
     public static void update(){
         if (currentHook != null) {
             allCharacters.clear();
-            var active = panel.isLIJ() ? currentHook.checkForValidityAndReaquirePointersLIJ() : currentHook.checkForValidityAndReaquirePointers();
+            var active = currentHook.checkForValidityAndReaquirePointers();
             if (!active) {
                 currentHook.close();
                 currentHook = null;
@@ -69,7 +70,7 @@ public class TCSHookManager {
                 playerOne = new HookCharacter(currentHook.readPlayerLocation(1), 180 - currentHook.readPlayerAngle(1), 0);
                 playerTwo = new HookCharacter(currentHook.readPlayerLocation(2), 180 - currentHook.readPlayerAngle(2), 0);
 
-                allCharacters = panel.isLIJ() ? currentHook.getAllCharactersLIJ() : currentHook.getAllCharacters();
+                allCharacters = currentHook.getAllCharacters();
 
                 if (Configuration.getBoolean("autoload-hook")) {
                     var currentHookMap = currentHook.getCurrentMap();
@@ -89,5 +90,23 @@ public class TCSHookManager {
                 }
             }
         }
+    }
+    
+
+    public enum GameExecutable {
+        TCS_GOG(GameVersion.LSW_TCS, "gog", "GOG"),
+        TCS_STEAM(GameVersion.LSW_TCS, "steam", "Steam"),
+        LIJ1_GOG(GameVersion.LIJ1, "gog", "Steam");
+
+        public GameVersion GAME;
+        public String SHORT_NAME;
+        public String NAME;
+
+		private GameExecutable(GameVersion gAME, String shortName, String name) {
+			GAME = gAME;
+            SHORT_NAME = GAME.SHORT_NAME + "-" + shortName;
+            NAME = GAME.NAME + " (" + name + ")";
+
+		}
     }
 }

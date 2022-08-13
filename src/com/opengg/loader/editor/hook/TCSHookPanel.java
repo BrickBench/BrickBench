@@ -4,6 +4,7 @@ import com.opengg.loader.MapXml;
 import com.opengg.loader.SwingUtil;
 import com.opengg.loader.editor.MapInterface;
 import com.opengg.loader.editor.components.WrapLayout;
+import com.opengg.loader.editor.hook.TCSHookManager.GameExecutable;
 import com.opengg.loader.editor.tabs.EditorTabAutoRegister;
 import com.opengg.loader.game.nu2.LevelsTXTParser;
 
@@ -31,7 +32,7 @@ public class TCSHookPanel extends JPanel implements EditorTab {
     private AIMessageTableModel aiMessageModel = new AIMessageTableModel(new ArrayList<>());
     private JButton connectButton;
     private JTextField mapID;
-    private JCheckBox door, reset,lij;
+    private JCheckBox door, reset;
     private JComboBox<String> mapCombo;
     private Map<String, Integer> mapNameToID = new HashMap<>();
 
@@ -41,10 +42,22 @@ public class TCSHookPanel extends JPanel implements EditorTab {
 
         JPanel hookManagerPanel = new JPanel(new WrapLayout());
 
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem header = new JMenuItem("<html><b>Select Game</b></html>");
+        header.setBackground(new JButton().getBackground());
+        header.setEnabled(false);
+        header.setOpaque(true);
+
+        for (var executable : GameExecutable.values()) {
+            var execItem = new JMenuItem(executable.NAME);
+            execItem.addActionListener(a -> TCSHookManager.beginHook(executable));
+            menu.add(execItem);
+        }
+
         connectButton = new JButton("Start Hook");
         connectButton.addActionListener(a -> {
             if(!TCSHookManager.isEnabled()){
-                TCSHookManager.beginHook();
+                menu.show(connectButton, 0 , connectButton.getHeight());
             }else{
                 TCSHookManager.endHook();
             }
@@ -77,7 +90,7 @@ public class TCSHookPanel extends JPanel implements EditorTab {
         JButton refresh = new JButton("Refresh");
         refresh.addActionListener(e -> {
             if(TCSHookManager.currentHook != null) {
-                aiMessageModel.set(lij.isSelected() ? TCSHookManager.currentHook.getAIMessagesLIJ() : TCSHookManager.currentHook.getAIMessages());
+                aiMessageModel.set(TCSHookManager.currentHook.getAIMessages());
                 aiMessageModel.fireTableDataChanged();
             }
         });
@@ -87,7 +100,7 @@ public class TCSHookPanel extends JPanel implements EditorTab {
             if(enableAutoRefresh.isSelected()){
                 SwingUtilities.invokeLater(() -> {
                     if(TCSHookManager.currentHook != null) {
-                        aiMessageModel.set(lij.isSelected() ? TCSHookManager.currentHook.getAIMessagesLIJ() : TCSHookManager.currentHook.getAIMessages());
+                        aiMessageModel.set(TCSHookManager.currentHook.getAIMessages());
                         aiMessageModel.fireTableDataChanged();
                     }
                 });
@@ -100,7 +113,7 @@ public class TCSHookPanel extends JPanel implements EditorTab {
                 List<AIMessage> updatedMessages = new ArrayList<>();
                 HashMap<String,AIMessage> realMessages = new HashMap<>();
 
-                (lij.isSelected() ? TCSHookManager.currentHook.getAIMessagesLIJ() : TCSHookManager.currentHook.getAIMessages()).forEach(a-> realMessages.put(a.name, a));
+                TCSHookManager.currentHook.getAIMessages().forEach(a-> realMessages.put(a.name, a));
 
                 for (AIMessage message : aiMessageModel.internal) {
                     AIMessage realMessage = realMessages.get(message.name);
@@ -111,7 +124,7 @@ public class TCSHookPanel extends JPanel implements EditorTab {
                 }
 
                 TCSHookManager.currentHook.updateAIMessage(updatedMessages);
-                aiMessageModel.set(lij.isSelected() ? TCSHookManager.currentHook.getAIMessagesLIJ() : TCSHookManager.currentHook.getAIMessages());
+                aiMessageModel.set(TCSHookManager.currentHook.getAIMessages());
                 aiMessageModel.fireTableDataChanged();
                 pushEdit.setEnabled(true);
             }
@@ -130,7 +143,6 @@ public class TCSHookPanel extends JPanel implements EditorTab {
         var autoload = new JCheckBox("Autoload maps from current hooked game");
         reset = new JCheckBox("Reset map on load");
         door = new JCheckBox("Reset door on load");
-        lij = new JCheckBox("LIJ1");
         autoload.setSelected(Boolean.parseBoolean(Configuration.getConfigFile("editor.ini").getConfig("autoload-hook")));
         autoload.addActionListener(a -> {
             Configuration.getConfigFile("editor.ini").writeConfig("autoload-hook", String.valueOf(autoload.isSelected())); BrickBench.CURRENT.reloadConfigFileData();
@@ -139,7 +151,6 @@ public class TCSHookPanel extends JPanel implements EditorTab {
         configPanel.add(autoload);
         configPanel.add(reset);
         configPanel.add(door);
-        configPanel.add(lij);
 
         loadMap.addActionListener(a -> {
             loadCurrentMap();
@@ -178,24 +189,14 @@ public class TCSHookPanel extends JPanel implements EditorTab {
     public void loadCurrentMap() {
         if(TCSHookManager.isEnabled()) {
             if(door.isSelected()){
-                if(lij.isSelected()) {
-                    TCSHookManager.currentHook.resetDoorLIJ();
-                }else {
-                    TCSHookManager.currentHook.resetDoor();
-                }
+                TCSHookManager.currentHook.resetDoor();
             }
+
             if(reset.isSelected()) {
-                if(lij.isSelected()){
-                    TCSHookManager.currentHook.setResetLIJ();
-                }else {
-                    TCSHookManager.currentHook.setResetBit();
-                }
+                TCSHookManager.currentHook.setResetBit();
             }
-            if(lij.isSelected()){
-                TCSHookManager.currentHook.setTargetMapLIJ(Integer.parseInt(mapID.getText()));
-            }else {
-                TCSHookManager.currentHook.setTargetMap(Integer.parseInt(mapID.getText()));
-            }
+
+            TCSHookManager.currentHook.setTargetMap(Integer.parseInt(mapID.getText()));
         }
     }
 
@@ -246,10 +247,6 @@ public class TCSHookPanel extends JPanel implements EditorTab {
     @Override
     public boolean getDefaultActive() {
         return false;
-    }
-
-    public boolean isLIJ(){
-        return lij.isSelected();
     }
 
     static class AIMessageTableModel extends AbstractTableModel {
