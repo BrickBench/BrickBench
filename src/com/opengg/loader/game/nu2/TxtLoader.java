@@ -19,7 +19,7 @@ public class TxtLoader {
                 line = line.replaceAll("(//.*)", "").trim();
                 var tokens = line.split("[\s=]");
                 switch (tokens[0]){
-                    case "farclip" -> {
+                    case "farclip","farclip_pc"-> {
                         mapData.txt().settingsMap().put("farclip",Float.valueOf(tokens[1]));
                     }
                     case "door_start" -> {
