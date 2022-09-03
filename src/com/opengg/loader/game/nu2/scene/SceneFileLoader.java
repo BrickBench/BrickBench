@@ -94,6 +94,7 @@ public class SceneFileLoader {
             default -> new DefaultFileBlock();
         };
         block.readFromFile(fileBuffer, blockSize, blockId, fileBuffer.position(), mapData);
+        block.fileBuffer = null;
         fileBuffer.position(savePtr + blockSize);
 
         mapData.scene().blocks().put(blockName, new NU2MapData.SceneData.Block(savePtr, blockSize));

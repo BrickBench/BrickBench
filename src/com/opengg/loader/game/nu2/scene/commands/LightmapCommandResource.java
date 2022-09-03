@@ -1,5 +1,6 @@
 package com.opengg.loader.game.nu2.scene.commands;
 
+import com.opengg.core.math.Vector4f;
 import com.opengg.core.render.shader.ShaderController;
 import com.opengg.loader.game.nu2.NU2MapData;
 import com.opengg.loader.game.nu2.scene.FileTexture;
@@ -11,16 +12,25 @@ public class LightmapCommandResource implements DisplayCommandResource<LightmapC
     private FileTexture texture2;
     private FileTexture texture3;
     private FileTexture texture4;
+    private float offsetX;
+    private float offsetY;
+    private float offsetZ;
+    private float offsetW;
 
     private int address;
+    private int lightmapType;
 
     private boolean multipleMaps = false;
-    public LightmapCommandResource(int address, boolean type, int id, int id2, int id3, int id4, NU2MapData mapData){
+    public LightmapCommandResource(int address, int lightmapType, int id, int id2, int id3, int id4,float offsetX,float offsetY, float offsetZ, float offsetW, NU2MapData mapData){
         texture = mapData.scene().texturesByRealIndex().get(id);
         texture2 = mapData.scene().texturesByRealIndex().get(id2);
         texture3 = mapData.scene().texturesByRealIndex().get(id3);
         texture4 = mapData.scene().texturesByRealIndex().get(id4);
-        multipleMaps = type;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
+        this.offsetZ = offsetZ;
+        this.offsetW = offsetW;
+        this.lightmapType = lightmapType;
         this.address = address;
     }
 
@@ -31,11 +41,25 @@ public class LightmapCommandResource implements DisplayCommandResource<LightmapC
 
     @Override
     public void run() {
-        ShaderController.setUniform("lightmap1", texture.nativeTexture().getNow(null));
-        if(multipleMaps){
+        if(lightmapType == 2 || lightmapType == 4){
+            ShaderController.setUniform("lightmap1", texture.nativeTexture().getNow(null));
             ShaderController.setUniform("lightmap2", texture2.nativeTexture().getNow(null));
             ShaderController.setUniform("lightmap3", texture3.nativeTexture().getNow(null));
             ShaderController.setUniform("lightmap4", texture4.nativeTexture().getNow(null));
+            if(lightmapType == 4){
+                ShaderController.setUniform("lightmapOffset",new Vector4f(offsetX,offsetY,offsetZ,offsetW));
+            }else{
+                ShaderController.setUniform("lightmapOffset",new Vector4f(offsetX,offsetY,1,1));
+            }
+        }else if(lightmapType == 1 || lightmapType == 3){
+            ShaderController.setUniform("lightmap1", texture.nativeTexture().getNow(null));
+            if(lightmapType == 3){
+                ShaderController.setUniform("lightmapOffset",new Vector4f(offsetX,offsetY,offsetZ,offsetW));
+            }else{
+                ShaderController.setUniform("lightmapOffset",new Vector4f(offsetX,offsetY,1,1));
+            }
+        }else{
+            System.out.println("edge case");
         }
     }
 

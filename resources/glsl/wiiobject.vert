@@ -47,6 +47,7 @@ layout(set=7, binding=0) unwrap uniform HDRBlock{
 uniform int invertY;
 uniform vec3 billboardCenter;
 uniform vec2 billboardSize;
+uniform vec4 lightmapOffset;
 
 void pipeColorSet0(){
     vec3 gammaMeshColor = pow(color.rgb, vec3(gamma));
@@ -90,13 +91,14 @@ void main() {
 
     uv0 = vs_uv0;
     if(LIGHTMAP_UVSET == 0){
-        lightmapCoord = vs_uv0;
+        lightmapCoord = vs_uv0 * lightmapOffset.zw + lightmapOffset.xy;
     }else if(LIGHTMAP_UVSET == 1){
-        lightmapCoord = vs_uv1;
+        lightmapCoord = vs_uv1 * lightmapOffset.zw + lightmapOffset.xy;
+        //lightmapCoord = lightmapOffset.xy;
     }else if(LIGHTMAP_UVSET == 2){
-        lightmapCoord = vs_uv2;
+        lightmapCoord = vs_uv2 * lightmapOffset.zw + lightmapOffset.xy;
     }else{
-        lightmapCoord = vs_uv3;
+        lightmapCoord = vs_uv3 * lightmapOffset.zw + lightmapOffset.xy;
     }
 
     if(SURFACE_UVSET == 0){

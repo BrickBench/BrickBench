@@ -104,8 +104,12 @@ public class DisplaySetBlock extends DefaultFileBlock {
                         int lm2 = fileBuffer.getInt();
                         int lm3 = fileBuffer.getInt();
                         int lm4 = fileBuffer.getInt();
+                        float xOffset = fileBuffer.getFloat();
+                        float yOffset = fileBuffer.getFloat();
+                        float zOffset = fileBuffer.getFloat();
+                        float wOffset = fileBuffer.getFloat();
 
-                        yield new LightmapCommandResource(resourcePtr, type == 2, lm, lm2, lm3, lm4, mapData);
+                        yield new LightmapCommandResource(resourcePtr, type, lm, lm2, lm3, lm4,xOffset,yOffset,zOffset,wOffset, mapData);
 
                     }
                     default -> {
