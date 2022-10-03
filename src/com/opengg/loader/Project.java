@@ -36,7 +36,7 @@ public record Project(boolean isProject,
      * Therefore, the exactness of the game used in the current project only works in the context of a non-readonly project.
      */
     public enum GameVersion {
-        LIJ1(NU2, "lij1", "Lego Indiana Jones 1", "LEGOIndianaJones.exe"),
+        LIJ1(NU2, "lij1", "Lego Indiana Jones 1", "LEGOIndy.exe"),
         LB1(NU2, "lb1", "Lego Batman"),
         LSW_TCS(NU2, "lsw-tcs", "Lego Star Wars: The Complete Saga", "LEGOStarWarsSaga.exe"),
 
