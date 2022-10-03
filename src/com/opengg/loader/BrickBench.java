@@ -345,7 +345,6 @@ public class BrickBench extends GGApplication implements KeyboardListener, Mouse
                 } else if (s.equals("CLOSE")) {
                     exit();
                 } else if (s.equals("HOOK")) {
-                    //TCSHookManager.beginHook();
                 } else {
                     loadNewProject(Path.of(s));
                 }

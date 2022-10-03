@@ -42,22 +42,11 @@ public class TCSHookPanel extends JPanel implements EditorTab {
 
         JPanel hookManagerPanel = new JPanel(new WrapLayout());
 
-        JPopupMenu menu = new JPopupMenu();
-        JMenuItem header = new JMenuItem("<html><b>Select Game</b></html>");
-        header.setBackground(new JButton().getBackground());
-        header.setEnabled(false);
-        header.setOpaque(true);
-
-        for (var executable : GameExecutable.values()) {
-            var execItem = new JMenuItem(executable.NAME);
-            execItem.addActionListener(a -> TCSHookManager.beginHook(executable));
-            menu.add(execItem);
-        }
-
+        
         connectButton = new JButton("Start Hook");
         connectButton.addActionListener(a -> {
             if(!TCSHookManager.isEnabled()){
-                menu.show(connectButton, 0 , connectButton.getHeight());
+                generateGameSelectMenu(null).show(connectButton, 0 , connectButton.getHeight());
             }else{
                 TCSHookManager.endHook();
             }
@@ -184,6 +173,25 @@ public class TCSHookPanel extends JPanel implements EditorTab {
         tabPane.add("Options", configPanel);
         tabPane.add("AI Messages", aiMessagePanel);
         add(tabPane, BorderLayout.CENTER);
+    }
+
+    public static JPopupMenu generateGameSelectMenu(Runnable onSelect) {
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem header = new JMenuItem("<html><b>Select Game</b></html>");
+        header.setBackground(new JButton().getBackground());
+        header.setEnabled(false);
+        header.setOpaque(true);
+
+        for (var executable : GameExecutable.values()) {
+            var execItem = new JMenuItem(executable.NAME);
+            execItem.addActionListener(a -> {
+                TCSHookManager.beginHook(executable);
+                if (onSelect != null) onSelect.run();
+            });
+            menu.add(execItem);
+        }
+
+        return menu;
     }
 
     public void loadCurrentMap() {

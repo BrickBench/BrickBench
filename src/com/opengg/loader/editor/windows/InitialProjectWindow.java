@@ -7,6 +7,7 @@ import com.opengg.core.engine.Resource;
 import com.opengg.loader.BrickBench;
 import com.opengg.loader.Util;
 import com.opengg.loader.editor.EditorIcons;
+import com.opengg.loader.editor.hook.TCSHookPanel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -84,8 +85,10 @@ public class InitialProjectWindow extends JFrame {
         });
 
         openEmpty.addActionListener(a -> {
-            onOpSelect.accept("HOOK");
-            this.dispose();
+            TCSHookPanel.generateGameSelectMenu(() -> {
+                onOpSelect.accept("HOOK");
+                this.dispose();
+            }).show(openEmpty, 0 , openEmpty.getHeight());
         });
 
         var topRow = Box.createHorizontalBox();
