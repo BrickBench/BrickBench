@@ -648,7 +648,15 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
             case EditorEntityProperty mp && propName.equals("Diffuse texture") -> {
                 var texture = (FileTexture) mp.value();
                 MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0x74, Util.littleEndian((short) texture.descriptor().trueIndex()));
-                MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x4, Util.littleEndian((short) texture.descriptor().trueIndex()));
+                MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x4, Util.littleEndian((int) texture.descriptor().trueIndex()));
+            }
+            case EditorEntityProperty mp && propName.equals("Specular texture") -> {
+                var texture = (FileTexture) mp.value();
+                MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x48, Util.littleEndian((int) texture.descriptor().trueIndex()));
+            }
+            case EditorEntityProperty mp && propName.equals("Normal texture") -> {
+                var texture = (FileTexture) mp.value();
+                MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x4C, Util.littleEndian((int) texture.descriptor().trueIndex()));
             }
             case FloatProperty fp && propName.equals("Specular exponent") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x7C, Util.littleEndian(fp.value()));
             case FloatProperty fp && propName.equals("Specular multiplier") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x78, Util.littleEndian(fp.value()));
