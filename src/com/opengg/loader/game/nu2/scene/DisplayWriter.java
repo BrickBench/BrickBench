@@ -118,7 +118,7 @@ public class DisplayWriter {
         var gscListEndAddr = scene.gscRenderableEndFromGSNH().get() +scene.blocks().get("GSNH").address() + 8;
         var gscListLen = scene.gscRenderableListLen().get();
 
-        SceneFileWriter.addSpace(gscListEndAddr, 4 * renderables.size());
+        SceneFileWriter.addSpace(gscListEndAddr, 4 * renderables.size()+4);
         EditorState.updateMap(MapLoader.reloadIndividualFile("gsc"));
 
         var pointerBuf = ByteBuffer.allocate(4 * renderables.size() + 4).order(ByteOrder.LITTLE_ENDIAN);
