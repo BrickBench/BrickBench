@@ -15,6 +15,8 @@ import jdk.incubator.foreign.ResourceScope;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 
 public class SceneFileLoader {
@@ -61,8 +63,16 @@ public class SceneFileLoader {
         fileBuffer.position(nu20Start + 0x20);
 
         while (fileBuffer.remaining() > 0) {
-            if(!loadBlockAtPosition(fileBuffer, mapData, false)) return;
+            if(!loadBlockAtPosition(fileBuffer, mapData, false)) break;
         }
+
+        //Re-sort because of out of order block loading
+        LinkedHashMap<String, NU2MapData.SceneData.Block> temp = new LinkedHashMap<>(mapData.scene().blocks());
+        mapData.scene().blocks().clear();
+        temp.entrySet()
+                .stream()
+                .sorted(Comparator.comparingInt(e -> e.getValue().address()))
+                .forEach((e1)->{mapData.scene().blocks().put(e1.getKey(),e1.getValue());});
     }
 
     private static boolean loadBlockAtPosition(ByteBuffer fileBuffer, NU2MapData mapData, boolean loadGameScene) throws IOException {
