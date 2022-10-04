@@ -150,7 +150,7 @@ public class EditorPane extends JPanel implements EditorTab {
                         attachPropEditor(inner, innerProp, gameObject);
                     }
 
-                    EditorCollapsable collapsable = new EditorCollapsable(groupProp.name(), inner, false);
+                    EditorCollapsable collapsable = new EditorCollapsable(groupProp.name(), inner, groupProp.autoExpand());
                     collapsable.setAlignmentX(Component.LEFT_ALIGNMENT);
                     collapsable.setAlignmentY(Component.TOP_ALIGNMENT);
                     holder.add(collapsable);

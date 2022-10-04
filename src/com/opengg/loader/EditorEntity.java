@@ -287,8 +287,10 @@ public interface EditorEntity<T extends EditorEntity<T>> {
         }
     }
 
-    record GroupProperty(String name, List<Property> value) implements Property{
-
+    record GroupProperty(String name, List<Property> value, boolean autoExpand) implements Property{
+        public GroupProperty(String name, List<Property> value){
+            this(name,value,false);
+        }
         @Override
         public String stringValue() {
             return value.stream().map(Property::stringValue).collect(Collectors.joining());

@@ -36,6 +36,10 @@ public class TemporaryMeshComponent extends EditorEntityRenderComponent implemen
     }
 
     private void apply() {
+        if(!makeMesh && !makeTerrain){
+            SwingUtil.showLoadingAlert("Mesh Import","You must specify whether to apply this as a scene model, terrain, or both",true);
+            return;
+        }
         OpenGG.asyncExec(() -> {
             var matrix = Matrix4f.IDENTITY.translate(getPosition()).rotate(getRotation()).scale(getScale());
 
@@ -128,6 +132,6 @@ public class TemporaryMeshComponent extends EditorEntityRenderComponent implemen
                 new VectorProperty("Scale", getScale(), false, true),
                 new GroupProperty("Apply as", List.of(
                         new BooleanProperty("Terrain", makeTerrain, true),
-                        new BooleanProperty("Scene model", makeMesh, true))));
+                        new BooleanProperty("Scene model", makeMesh, true)),true));
     }
 }
