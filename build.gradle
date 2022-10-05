@@ -6,7 +6,7 @@ plugins{
 }
 
 group 'com.opengg'
-version '0.3.3'
+version '0.3.4'
 
 project.ext.javaVersion = 1.18
 project.ext.lwjglVersion = "3.3.1"
