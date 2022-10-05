@@ -101,33 +101,20 @@ public record ProjectStructure(FolderNode root) {
             }
 
             case ProjectResource rn -> {
-                if (target.name().equals(rn.name())) {
-                    project.resources().remove(rn);
-                    yield true;
-                }
-                yield false;
+                yield target.name().equals(rn.name());
             }
 
             case MapXml fn -> {
-                if (target.name().equals(fn.name())) {
-                    project.maps().remove(fn);
-                    yield true;
-                }
-                yield false;
+                yield target.name().equals(fn.name());
             }
 
             case Area an -> {
                 if (target instanceof Area an2 && an.name().equals(an2.name())) {
-                    for (var map : an.maps()) {
-                        project.maps().remove(map);
-                    }
                     yield true;
-
                 } else {
                     for (int i = 0; i < an.maps().size(); i++) {
                         var map = an.maps().get(i);
                         if (map.name().equals(target.name())) {
-                            project.maps().remove(map);
                             an.maps().remove(map);
                         }
                     }

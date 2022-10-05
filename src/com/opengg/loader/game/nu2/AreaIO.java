@@ -62,7 +62,7 @@ public class AreaIO {
             var mapDesiredPath = targetAreaDirectory.resolve(map.directory);
 
             var newName =  map.name.replaceAll("(?i)" + Pattern.quote(originalName), targetName);
-            if (project.maps().stream().anyMatch(m -> m.name().equalsIgnoreCase(newName))) {
+            if (project.maps().stream().anyMatch(m -> m.name().equalsIgnoreCase(newName))) { // Add old map to new area
                 var newMap = project.maps().stream().filter(m -> m.name().equalsIgnoreCase(newName)).findFirst().get();
                 var oldParent = project.structure().getParent(newMap);
 

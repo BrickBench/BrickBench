@@ -60,13 +60,14 @@ public class ProjectStructurePanel extends JPanel implements EditorTab {
                     OpenGG.asyncExec(() -> {
                         EditorState.getProject().structure().removeNode(EditorState.getProject(), pnuo.node());
 
-                        if (pnuo.node() instanceof MapXml) {
+                        if ((pnuo.node() instanceof MapXml map && EditorState.getActiveMap().levelData().xmlData() == map) ||
+                            (pnuo.node() instanceof Area area && area.maps().stream().anyMatch(map -> EditorState.getActiveMap().levelData().xmlData() == map))) {
                             if (EditorState.getProject().maps().isEmpty()) {
                                 BrickBench.CURRENT.useMapFromCurrentProject(null);
                             } else {
                                 BrickBench.CURRENT.useMapFromCurrentProject(EditorState.getProject().maps().get(0));
                             }
-                        }
+                        } 
 
                         EditorState.updateProject(EditorState.getProject());
                     });
