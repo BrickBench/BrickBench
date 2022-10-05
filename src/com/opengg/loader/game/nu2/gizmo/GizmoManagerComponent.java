@@ -15,6 +15,7 @@ import com.opengg.core.world.components.Component;
 import com.opengg.loader.BrickBench;
 import com.opengg.loader.components.EditorEntityRenderComponent;
 import com.opengg.loader.components.BillBoardRenderable;
+import com.opengg.loader.components.NativeCache;
 
 import java.awt.*;
 import java.util.List;
@@ -167,7 +168,7 @@ public class GizmoManagerComponent extends Component {
         }else if(gizmo instanceof Gizmo.Tube gizTube){
             var renderable = new MatrixRenderable(
                 new TextureRenderable(
-                    ObjectCreator.createCylinder(), 
+                        NativeCache.CYLINDER,
                     Texture.ofColor(Color.PINK, 0.6f)),
                 new Matrix4f().scale(gizTube.radius(), gizTube.height(), gizTube.radius())
                     .translate(gizTube.pos().add(new Vector3f(0, gizTube.height(), 0))));
