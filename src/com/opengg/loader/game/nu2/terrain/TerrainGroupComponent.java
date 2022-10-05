@@ -116,14 +116,17 @@ public class TerrainGroupComponent extends EditorEntityRenderComponent {
 
     @Override
     public void render(){
+        OpenGLRenderer.getOpenGLRenderer().setBackfaceCulling(true);
+        
         if(EditorState.CURRENT.shouldHighlight && EditorState.getSelectedObject().get() instanceof TerrainGroup obj && obj != this.terrainGroup) {
             ShaderController.setUniform("muteColors", 1);
         }else{
             ShaderController.setUniform("muteColors", 0);
         }
 
-        OpenGLRenderer.getOpenGLRenderer().setBackfaceCulling(false);
         super.render();
+
+        OpenGLRenderer.getOpenGLRenderer().setBackfaceCulling(false);
     }
 
     public TerrainGroup getTerrainGroup() {
