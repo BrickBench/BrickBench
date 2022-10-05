@@ -96,7 +96,7 @@ public class TCSHookManager {
     public enum GameExecutable {
         TCS_GOG(GameVersion.LSW_TCS, "gog", "GOG"),
         TCS_STEAM(GameVersion.LSW_TCS, "steam", "Steam"),
-        LIJ1_GOG(GameVersion.LIJ1, "gog", "Steam");
+        LIJ1_GOG(GameVersion.LIJ1, "gog", "GOG");
 
         public GameVersion GAME;
         public String SHORT_NAME;
