@@ -29,7 +29,9 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
-          java-version: 18
+          java-version: 19
+          java-package: jdk
+          distribution: zulu
       - name: Build Updater
         run: cl updater/Updater.cpp /Fe:Updater /std:c++latest
 

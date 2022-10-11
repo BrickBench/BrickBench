@@ -16,6 +16,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
@@ -51,7 +52,7 @@ public class ExportDialog extends JDialog {
         this.add(exportLine, BorderLayout.SOUTH);
 
         exportProject.addActionListener(a -> {
-            if (exportLocation.getFile() == null) {
+            if (!Files.exists(exportLocation.getFile())) {
                 SwingUtil.showErrorAlert("Please select a path to export to.");
                 return;
             }
