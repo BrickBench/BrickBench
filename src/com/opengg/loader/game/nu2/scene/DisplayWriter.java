@@ -118,20 +118,16 @@ public class DisplayWriter {
         var gscListEndAddr = scene.gscRenderableEndFromGSNH().get() +scene.blocks().get("GSNH").address() + 8;
         var gscListLen = scene.gscRenderableListLen().get();
 
-        SceneFileWriter.addSpace(gscListEndAddr, 4 * renderables.size()+4);
+        SceneFileWriter.addSpace(gscListEndAddr, 4 * renderables.size());
         EditorState.updateMap(MapLoader.reloadIndividualFile("gsc"));
 
-        var pointerBuf = ByteBuffer.allocate(4 * renderables.size() + 4).order(ByteOrder.LITTLE_ENDIAN);
+        var pointerBuf = ByteBuffer.allocate(4 * renderables.size()).order(ByteOrder.LITTLE_ENDIAN);
 
-        int last = 0;
         for(int i = 0; i < renderables.size(); i++){
             int currentAddr = gscListEndAddr + (i * 4);
             pointerBuf.putInt(newAddresses.get(i) - currentAddr);
             SceneFileWriter.addPointer(currentAddr);
-            last = currentAddr;
         }
-
-        pointerBuf.putInt(newAddresses.get(newAddresses.size()-1) + 0x38 - (last + 4)); //adjust first post-gsc renderable pointer
 
         MapWriter.applyPatch(SCENE, gscListEndAddr, pointerBuf);
         MapWriter.applyPatch(SCENE, gscListLenAddr, Util.littleEndian(gscListLen + renderables.size()));

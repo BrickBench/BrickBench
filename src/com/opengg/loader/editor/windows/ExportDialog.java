@@ -51,6 +51,11 @@ public class ExportDialog extends JDialog {
         this.add(exportLine, BorderLayout.SOUTH);
 
         exportProject.addActionListener(a -> {
+            if (exportLocation.getFile() == null) {
+                SwingUtil.showErrorAlert("Please select a path to export to.");
+                return;
+            }
+
             var runner = switch (exportTabs.getSelectedIndex()){
                 case 0 -> wholeProject.y();
                 case 1 -> perMap.y();
