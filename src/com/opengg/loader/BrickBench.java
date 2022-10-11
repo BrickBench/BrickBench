@@ -96,7 +96,7 @@ public class BrickBench extends GGApplication implements KeyboardListener, Mouse
     /**
      * The current editor version.
      */
-    public static final Version VERSION = new Version("v0.3.4");
+    public static final Version VERSION = new Version("v0.3.4.1");
     public static final boolean DEVMODE = false;
 
     /**
