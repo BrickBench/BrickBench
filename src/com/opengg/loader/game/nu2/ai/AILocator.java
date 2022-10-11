@@ -14,9 +14,9 @@ public record AILocator(Vector3f pos, String name, int id, float startAngle, int
     @Override
     public void applyPropertyEdit(String propName, Property newValue) {
         switch (newValue) {
-            case StringProperty sProp && sProp.name().equals("Name") -> MapWriter.applyPatch(MapWriter.WritableObject.AI_LOCATOR, fileAddress, Util.getStringBytes(sProp.stringValue(), 16));
-            case VectorProperty vProp && vProp.name().equals("Position") -> MapWriter.applyPatch(MapWriter.WritableObject.AI_LOCATOR, fileAddress + 16, vProp.value().toLittleEndianByteBuffer());
-            case FloatProperty fProp && propName.equals("Angle") -> MapWriter.applyPatch(MapWriter.WritableObject.CREATURE_SPAWN, fileAddress + 16 + 12, Util.littleEndian(Util.floatToShortAngle(fProp.value())));
+            case StringProperty sProp when sProp.name().equals("Name") -> MapWriter.applyPatch(MapWriter.WritableObject.AI_LOCATOR, fileAddress, Util.getStringBytes(sProp.stringValue(), 16));
+            case VectorProperty vProp when vProp.name().equals("Position") -> MapWriter.applyPatch(MapWriter.WritableObject.AI_LOCATOR, fileAddress + 16, vProp.value().toLittleEndianByteBuffer());
+            case FloatProperty fProp when propName.equals("Angle") -> MapWriter.applyPatch(MapWriter.WritableObject.CREATURE_SPAWN, fileAddress + 16 + 12, Util.littleEndian(Util.floatToShortAngle(fProp.value())));
             default -> {}
         }
     }

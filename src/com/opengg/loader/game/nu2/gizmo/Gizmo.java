@@ -59,17 +59,17 @@ public sealed interface Gizmo extends MapEntity<Gizmo>, Selectable  {
         @Override
         public void applyPropertyEdit(String propName, Property newValue) {
             switch (newValue) {
-                case VectorProperty nVec && propName.equals("Position") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16, nVec.value().toLittleEndianByteBuffer());
-                case StringProperty sProp && propName.equals("Name") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress, Util.getStringBytes(sProp.stringValue(), 16));
-                case FloatProperty fProp && propName.equals("Reset time") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 2 + 1 + 1,
+                case VectorProperty nVec when propName.equals("Position") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16, nVec.value().toLittleEndianByteBuffer());
+                case StringProperty sProp when propName.equals("Name") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress, Util.getStringBytes(sProp.stringValue(), 16));
+                case FloatProperty fProp when propName.equals("Reset time") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 2 + 1 + 1,
                         ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putFloat(fProp.value()));
-                case EnumProperty enumProperty && propName.equals("Reset behavior") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 2 + 1,
+                case EnumProperty enumProperty when propName.equals("Reset behavior") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 2 + 1,
                         new byte[]{(byte) (enumProperty.value() == PullBehavior.MULTIPLE_PULLS ? 1 : 0)});
-                case EnumProperty enumProperty && propName.equals("Body visibility") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 2 + 1 + 1 + 4,
+                case EnumProperty enumProperty when propName.equals("Body visibility") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 2 + 1 + 1 + 4,
                         new byte[]{(byte) (enumProperty.value() == Visibility.INVISIBLE ? 1 : 0)});
-                case EnumProperty enumProperty && propName.equals("Floor cross visibility") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 2 + 1 + 1 + 4 + 1 + 12 + 4,
+                case EnumProperty enumProperty when propName.equals("Floor cross visibility") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 2 + 1 + 1 + 4 + 1 + 12 + 4,
                         new byte[]{(byte) (enumProperty.value() == Visibility.VISIBLE ? 0 : 1)});
-                case EnumProperty enumProperty && propName.equals("Stud color") -> {
+                case EnumProperty enumProperty when propName.equals("Stud color") -> {
                     var colorChar = switch ((Gizmo.StudColor) enumProperty.value()) {
                         case RED -> 'r';
                         case BLUE -> 'b';
@@ -82,16 +82,16 @@ public sealed interface Gizmo extends MapEntity<Gizmo>, Selectable  {
                     };
                     MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 2, new byte[]{(byte) colorChar});
                 }
-                case FloatProperty iProp && propName.equals("Angle") -> {
+                case FloatProperty iProp when propName.equals("Angle") -> {
                     short backAngle = Util.floatToShortAngle(iProp.value());
                     MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12,
                             ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN).putShort(backAngle).array());
                 }
-                case VectorProperty nVec && propName.equals("Activation position") -> {
+                case VectorProperty nVec when propName.equals("Activation position") -> {
                     var newPosition = Quaternionf.createYXZ(new Vector3f(0, -angle, 0)).transform(nVec.value().subtract(pos));
                     MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 2 + 1 + 1 + 4 + 1, newPosition.toLittleEndianByteBuffer());
                 }
-                case FloatProperty nF && propName.equals("Activation range") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 2 + 1 + 1 + 4 + 1 + 12,
+                case FloatProperty nF when propName.equals("Activation range") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 2 + 1 + 1 + 4 + 1 + 12,
                      Util.littleEndian(nF.value()));
                 case null, default -> {
                 }
@@ -181,9 +181,9 @@ public sealed interface Gizmo extends MapEntity<Gizmo>, Selectable  {
         @Override
         public void applyPropertyEdit(String propName, Property newValue) {
             switch (newValue) {
-                case VectorProperty nVec && propName.equals("Position") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 8, nVec.value().toLittleEndianByteBuffer());
-                case StringProperty sProp && propName.equals("Name") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress, Util.getStringBytes(sProp.stringValue(), 8));
-                case EnumProperty eProp && propName.equals("Pickup type") -> {
+                case VectorProperty nVec when propName.equals("Position") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 8, nVec.value().toLittleEndianByteBuffer());
+                case StringProperty sProp when propName.equals("Name") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress, Util.getStringBytes(sProp.stringValue(), 8));
+                case EnumProperty eProp when propName.equals("Pickup type") -> {
                     var colorChar = ((PickupType) eProp.value()).getCode();
                     MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 12 + 8, new byte[]{(byte) colorChar});
                 }
@@ -207,14 +207,14 @@ public sealed interface Gizmo extends MapEntity<Gizmo>, Selectable  {
         @Override
         public void applyPropertyEdit(String propName, Property newValue) {
             switch (newValue) {
-                case StringProperty sProp && propName.equals("Name") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress, Util.getStringBytes(sProp.value(), 16));
-                case VectorProperty nVec && propName.equals("Start") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16, nVec.value().toLittleEndianByteBuffer());
-                case VectorProperty nVec && propName.equals("Swing axis") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12, nVec.value().toLittleEndianByteBuffer());
-                case VectorProperty nVec && propName.equals("End") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 12, nVec.value().toLittleEndianByteBuffer());
-                case EnumProperty nVec && propName.equals("Zip type") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 12 + 12 + 2 + 2, new byte[]{(byte) (nVec.value() == ZipType.SWING ? 1 : 0)});
-                case EnumProperty nVec && propName.equals("Zip direction") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 12 + 12 + 2 + 2 + 1 + 1, new byte[]{(byte) (nVec.value() == Direction.TWO_WAY ? 1 : 0)});
-                case EnumProperty nVec && propName.equals("Hook visibility") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 12 + 12 + 2 + 2 + 1 + 1 + 1, new byte[]{(byte) (nVec.value() == Option.YES ? 1 : 0)});
-                case EnumProperty nVec && propName.equals("Floor cross visibility") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 12 + 12 + 2 + 2 + 1 + 1 + 1 + 1 + 1, new byte[]{(byte) (nVec.value() == Option.YES ? 1 : 0)});
+                case StringProperty sProp when propName.equals("Name") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress, Util.getStringBytes(sProp.value(), 16));
+                case VectorProperty nVec when propName.equals("Start") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16, nVec.value().toLittleEndianByteBuffer());
+                case VectorProperty nVec when propName.equals("Swing axis") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12, nVec.value().toLittleEndianByteBuffer());
+                case VectorProperty nVec when propName.equals("End") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 12, nVec.value().toLittleEndianByteBuffer());
+                case EnumProperty nVec when propName.equals("Zip type") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 12 + 12 + 2 + 2, new byte[]{(byte) (nVec.value() == ZipType.SWING ? 1 : 0)});
+                case EnumProperty nVec when propName.equals("Zip direction") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 12 + 12 + 2 + 2 + 1 + 1, new byte[]{(byte) (nVec.value() == Direction.TWO_WAY ? 1 : 0)});
+                case EnumProperty nVec when propName.equals("Hook visibility") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 12 + 12 + 2 + 2 + 1 + 1 + 1, new byte[]{(byte) (nVec.value() == Option.YES ? 1 : 0)});
+                case EnumProperty nVec when propName.equals("Floor cross visibility") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 16 + 12 + 12 + 12 + 2 + 2 + 1 + 1 + 1 + 1 + 1, new byte[]{(byte) (nVec.value() == Option.YES ? 1 : 0)});
                 case null, default -> {
                 }
             }
@@ -289,10 +289,10 @@ public sealed interface Gizmo extends MapEntity<Gizmo>, Selectable  {
         @Override
         public void applyPropertyEdit(String propName, Property newValue) {
             switch (newValue) {
-                case VectorProperty vProp && propName.equals("Position") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength,
+                case VectorProperty vProp when propName.equals("Position") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength,
                         vProp.value().toLittleEndianByteBuffer());
-                case FloatProperty iProp && propName.equals("Angle") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12, Util.littleEndian(Util.floatToShortAngle(iProp.value())));
-                case EnumProperty eProp && propName.equals("Panel type") -> {
+                case FloatProperty iProp when propName.equals("Angle") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12, Util.littleEndian(Util.floatToShortAngle(iProp.value())));
+                case EnumProperty eProp when propName.equals("Panel type") -> {
                     byte byteType = (byte) switch ((PanelType) eProp.value()) {
                         case ASTROMECH -> 0;
                         case PROTOCOL_DROID -> 1;
@@ -302,14 +302,14 @@ public sealed interface Gizmo extends MapEntity<Gizmo>, Selectable  {
                     };
                     MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2, new byte[]{byteType});
                 }
-                case VectorProperty nVec && propName.equals("Activation position") ->
+                case VectorProperty nVec when propName.equals("Activation position") ->
                         MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2 + 2, Quaternionf.createYXZ(new Vector3f(0, -angle, 0)).transform(nVec.value().subtract(position)).toLittleEndianByteBuffer());
-                case FloatProperty nF && propName.equals("Activation range") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2 + 2 + 12, Util.littleEndian(nF.value()));
-                case EnumProperty eProp && propName.equals("Face visibility") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2 + 1, new byte[]{(byte) (eProp.value() == Visibility.VISIBLE ? 0 : 1)});
-                case EnumProperty eProp && propName.equals("Floor cross visibility") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2 + 1 + 1 + 16, new byte[]{(byte) (eProp.value() == Visibility.VISIBLE ? 0 : 1)});
-                case EnumProperty eProp && propName.equals("Use alternative droid color") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2 + 1 + 1 + 16 + 1, new byte[]{(byte) (eProp.value() == Option.YES ? 1 : 0)});
-                case EnumProperty eProp && propName.equals("Use alternative body color") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2 + 1 + 1 + 16 + 1 + 1, new byte[]{(byte) (eProp.value() == Option.YES ? 1 : 0)});
-                case StringProperty sp && propName.equals("Name") -> {
+                case FloatProperty nF when propName.equals("Activation range") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2 + 2 + 12, Util.littleEndian(nF.value()));
+                case EnumProperty eProp when propName.equals("Face visibility") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2 + 1, new byte[]{(byte) (eProp.value() == Visibility.VISIBLE ? 0 : 1)});
+                case EnumProperty eProp when propName.equals("Floor cross visibility") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2 + 1 + 1 + 16, new byte[]{(byte) (eProp.value() == Visibility.VISIBLE ? 0 : 1)});
+                case EnumProperty eProp when propName.equals("Use alternative droid color") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2 + 1 + 1 + 16 + 1, new byte[]{(byte) (eProp.value() == Option.YES ? 1 : 0)});
+                case EnumProperty eProp when propName.equals("Use alternative body color") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2 + 1 + 1 + 16 + 1 + 1, new byte[]{(byte) (eProp.value() == Option.YES ? 1 : 0)});
+                case StringProperty sp when propName.equals("Name") -> {
                     var nameBuf = sp.stringValue().getBytes(StandardCharsets.UTF_8);
                     MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress, Util.littleEndian(nameBuf.length));
                     MapWriter.removeSpaceAtLocation(MapWriter.WritableObject.GIZMO, fileAddress + 4, nameLength);
@@ -384,10 +384,10 @@ public sealed interface Gizmo extends MapEntity<Gizmo>, Selectable  {
         @Override
         public void applyPropertyEdit(String propName, Property newValue) {
             switch (newValue) {
-                case StringProperty sProp && propName.equals("Name") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress, Util.getStringBytes(sProp.value(), 0x10));
-                case VectorProperty nVec && propName.equals("Position") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 0x10, nVec.value().toLittleEndianByteBuffer());
-                case FloatProperty vProp && propName.equals("Height") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 0x10 + 12, Util.littleEndian(vProp.value()));
-                case FloatProperty vProp && propName.equals("Radius") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 0x10 + 12 + 4, Util.littleEndian(vProp.value()));
+                case StringProperty sProp when propName.equals("Name") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress, Util.getStringBytes(sProp.value(), 0x10));
+                case VectorProperty nVec when propName.equals("Position") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 0x10, nVec.value().toLittleEndianByteBuffer());
+                case FloatProperty vProp when propName.equals("Height") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 0x10 + 12, Util.littleEndian(vProp.value()));
+                case FloatProperty vProp when propName.equals("Radius") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 0x10 + 12 + 4, Util.littleEndian(vProp.value()));
                 case null, default -> {}
             }
         }
@@ -407,26 +407,26 @@ public sealed interface Gizmo extends MapEntity<Gizmo>, Selectable  {
         @Override
         public void applyPropertyEdit(String propName, Property newValue) {
             switch (newValue) {
-                case VectorProperty nVec && propName.equals("Position") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength, nVec.value().toLittleEndianByteBuffer());
-                case StringProperty sProp && propName.equals("Name") -> {
+                case VectorProperty nVec when propName.equals("Position") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength, nVec.value().toLittleEndianByteBuffer());
+                case StringProperty sProp when propName.equals("Name") -> {
                     var nameBuf = sProp.stringValue().getBytes(StandardCharsets.UTF_8);
                     MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress, Util.littleEndian(nameBuf.length));
                     MapWriter.removeSpaceAtLocation(MapWriter.WritableObject.GIZMO, fileAddress + 4, nameLength);
                     MapWriter.addSpaceAtLocation(MapWriter.WritableObject.GIZMO, fileAddress + 4, nameBuf.length);
                     MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4, nameBuf);
                 }
-                case FloatProperty iProp && propName.equals("Angle") -> {
+                case FloatProperty iProp when propName.equals("Angle") -> {
                     short backAngle = Util.floatToShortAngle(iProp.value());
                     MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12, Util.littleEndian(backAngle));
                 }
-                case VectorProperty nVec && propName.equals("Activation position") -> {
+                case VectorProperty nVec when propName.equals("Activation position") -> {
                     var newPosition = Quaternionf.createYXZ(new Vector3f(0, -angle, 0)).transform(nVec.value().subtract(pos));
                     MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2 + 1 + 1, newPosition.toLittleEndianByteBuffer());
                 }
-                case FloatProperty nF && propName.equals("Activation range") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2 + 1 + 1 + 12, Util.littleEndian(nF.value()));
-                case EnumProperty enumProperty && propName.equals("Floor cross visibility") ->
+                case FloatProperty nF when propName.equals("Activation range") -> MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2 + 1 + 1 + 12, Util.littleEndian(nF.value()));
+                case EnumProperty enumProperty when propName.equals("Floor cross visibility") ->
                         MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2 + 1 + 1 + 1 + 12 + 4, new byte[]{(byte) (enumProperty.value() == Visibility.VISIBLE ? 0 : 1)});
-                case EnumProperty eProp && propName.equals("Hat type") -> {
+                case EnumProperty eProp when propName.equals("Hat type") -> {
                     byte byteType = (byte) switch ((HatType) eProp.value()) {
                         case LEIA -> 1;
                         case FEDORA -> 2;
@@ -439,7 +439,7 @@ public sealed interface Gizmo extends MapEntity<Gizmo>, Selectable  {
                     };
                     MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2, new byte[]{byteType});
                 }
-                case EnumProperty enumProperty && propName.equals("Stud color") -> {
+                case EnumProperty enumProperty when propName.equals("Stud color") -> {
                     var colorChar = ((StudColor) enumProperty.value()).getCode();
                     MapWriter.applyPatch(MapWriter.WritableObject.GIZMO, fileAddress + 4 + nameLength + 12 + 2 + 1, new byte[]{(byte) colorChar});
                 }

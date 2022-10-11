@@ -81,18 +81,18 @@ public record ProjectStructure(FolderNode root) {
 
     private static boolean removeNode(Project project, Node<?> target, Node<?> current) {
         return switch (current) {
-            case FolderNode fn -> {
-                if (fn.name.equalsIgnoreCase(target.name())) {
-                    for (var child : fn.children) {
+            case FolderNode(var name, var children) -> {
+                if (name.equalsIgnoreCase(target.name())) {
+                    for (var child : children) {
                         removeNode(project, child, child);
                     }
                     yield true;
                 } else {
-                    for (int i = 0; i < fn.children.size(); i++) {
-                        var child = fn.children.get(i);
+                    for (int i = 0; i < children.size(); i++) {
+                        var child = children.get(i);
                         var doRemove = removeNode(project, target, child);
                         if (doRemove) {
-                            fn.children.remove(child);
+                            children.remove(child);
                         }
                     }
 
@@ -138,8 +138,8 @@ public record ProjectStructure(FolderNode root) {
 
     private static Node<?> getParent(Node<?> target, Node<?> current) {
         return switch (current) {
-            case FolderNode fn -> {
-                for (var child : fn.children) {
+            case FolderNode(var name, var children) -> {
+                for (var child : children) {
                     if (child.name().equalsIgnoreCase(target.name())){
                         yield current;
                     }
@@ -181,12 +181,12 @@ public record ProjectStructure(FolderNode root) {
 
     private static List<String> getFolderFor(Node<?> target, Node<?> current) {
         return switch (current) {
-            case FolderNode fn -> {
-                if (fn.name.equalsIgnoreCase(target.name())) {
+            case FolderNode(var name, var children)-> {
+                if (name.equalsIgnoreCase(target.name())) {
                     yield List.of(target.name());
                 }
 
-                for (var child : fn.children) {
+                for (var child : children) {
                     var result = getFolderFor(target, child);
                     if (result != null) {
                         var list = new ArrayList<String>();

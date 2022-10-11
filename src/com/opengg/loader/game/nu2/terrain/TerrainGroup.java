@@ -46,7 +46,7 @@ public record TerrainGroup(Vector3f position, int flag, int terrainPlatformIndex
     @Override
     public void applyPropertyEdit(String propName, Property newValue) {
         switch (newValue) {
-            case VectorProperty vp && propName.equals("Position") -> MapWriter.applyPatch(MapWriter.WritableObject.TERRAIN, objectDefinitionAddress + 8, vp.value().toLittleEndianByteBuffer());
+            case VectorProperty vp when propName.equals("Position") -> MapWriter.applyPatch(MapWriter.WritableObject.TERRAIN, objectDefinitionAddress + 8, vp.value().toLittleEndianByteBuffer());
             case null, default -> {
             }
         }

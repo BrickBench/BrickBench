@@ -16,12 +16,12 @@ import com.opengg.loader.game.nu2.scene.FileMaterial;
 import com.opengg.loader.game.nu2.scene.FileTexture;
 import com.opengg.loader.game.nu2.scene.GSCMesh;
 import com.opengg.loader.game.nu2.scene.GameModel;
-import jdk.incubator.foreign.MemorySegment;
-import jdk.incubator.foreign.ResourceScope;
 import org.lwjgl.util.meshoptimizer.MeshOptimizer;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.foreign.MemorySegment;
+import java.lang.foreign.MemorySession;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -136,7 +136,7 @@ public class SceneExporter {
                 indices.add((int) indexBuffer.get());
             }
         }else{
-            try (var scope = ResourceScope.newConfinedScope()) {
+            try (var scope = MemorySession.openConfined()) {
                 var intIndices = MemorySegment.allocateNative((mesh.triangleCount + 2) * Integer.BYTES, scope).asByteBuffer().order(ByteOrder.nativeOrder()).asIntBuffer();
 
                 for (int i = 0; i < mesh.triangleCount + 2; i++) {

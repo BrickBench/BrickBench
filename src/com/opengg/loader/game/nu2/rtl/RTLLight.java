@@ -37,14 +37,14 @@ public record RTLLight (Vector3f pos, Vector3f rot, Vector3f color, Vector3f fli
     @Override
     public void applyPropertyEdit(String propName, Property newValue) {
         switch (newValue) {
-            case VectorProperty vp && propName.equals("Position") -> MapWriter.applyPatch(MapWriter.WritableObject.LIGHTS, address, vp.value().toLittleEndianByteBuffer());
-            case VectorProperty vp && propName.equals("Angle") -> MapWriter.applyPatch(MapWriter.WritableObject.LIGHTS, address + 12, vp.value().toLittleEndianByteBuffer());
-            case ColorProperty cp && propName.equals("Color") -> MapWriter.applyPatch(MapWriter.WritableObject.LIGHTS, address + 12 + 12 + 12, cp.value().toLittleEndianByteBuffer());
-            case ColorProperty cp && propName.equals("Flicker Color") -> MapWriter.applyPatch(MapWriter.WritableObject.LIGHTS, address + 12 + 12 + 12 + 12, cp.value().toLittleEndianByteBuffer());
-            case EnumProperty ep && propName.equals("Light Type") -> MapWriter.applyPatch(MapWriter.WritableObject.LIGHTS, address + 0x58, new byte[]{(byte) ((LightType)ep.value()).BYTE_VALUE});
-            case FloatProperty fp && propName.equals("Distance") -> MapWriter.applyPatch(MapWriter.WritableObject.LIGHTS, address + 0x3C, Util.littleEndian(fp.value()));
-            case FloatProperty fp && propName.equals("Falloff") -> MapWriter.applyPatch(MapWriter.WritableObject.LIGHTS, address + 0x40, Util.littleEndian(fp.value()));
-            case FloatProperty fp && propName.equals("Multiplier") -> MapWriter.applyPatch(MapWriter.WritableObject.LIGHTS, address + 0x6C, Util.littleEndian(fp.value()));
+            case VectorProperty vp when propName.equals("Position") -> MapWriter.applyPatch(MapWriter.WritableObject.LIGHTS, address, vp.value().toLittleEndianByteBuffer());
+            case VectorProperty vp when propName.equals("Angle") -> MapWriter.applyPatch(MapWriter.WritableObject.LIGHTS, address + 12, vp.value().toLittleEndianByteBuffer());
+            case ColorProperty cp when propName.equals("Color") -> MapWriter.applyPatch(MapWriter.WritableObject.LIGHTS, address + 12 + 12 + 12, cp.value().toLittleEndianByteBuffer());
+            case ColorProperty cp when propName.equals("Flicker Color") -> MapWriter.applyPatch(MapWriter.WritableObject.LIGHTS, address + 12 + 12 + 12 + 12, cp.value().toLittleEndianByteBuffer());
+            case EnumProperty ep when propName.equals("Light Type") -> MapWriter.applyPatch(MapWriter.WritableObject.LIGHTS, address + 0x58, new byte[]{(byte) ((LightType)ep.value()).BYTE_VALUE});
+            case FloatProperty fp when propName.equals("Distance") -> MapWriter.applyPatch(MapWriter.WritableObject.LIGHTS, address + 0x3C, Util.littleEndian(fp.value()));
+            case FloatProperty fp when propName.equals("Falloff") -> MapWriter.applyPatch(MapWriter.WritableObject.LIGHTS, address + 0x40, Util.littleEndian(fp.value()));
+            case FloatProperty fp when propName.equals("Multiplier") -> MapWriter.applyPatch(MapWriter.WritableObject.LIGHTS, address + 0x6C, Util.littleEndian(fp.value()));
             default -> {}
         }
     }

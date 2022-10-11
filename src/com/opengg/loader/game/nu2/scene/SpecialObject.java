@@ -60,7 +60,7 @@ public record SpecialObject(GameModel model,
     public void applyPropertyEdit(String propName, Property newValue) {
         Matrix4f newMatrix = null;
         switch (newValue) {
-            case VectorProperty vProp && propName.equals("Position") -> {
+            case VectorProperty vProp when propName.equals("Position") -> {
                 newMatrix = Matrix4f.IDENTITY.translate(vProp.value())
                         .rotate(iablObj.transform().getRotationNormalized())
                         .scale(iablObj.transform().getScale());
@@ -72,22 +72,22 @@ public record SpecialObject(GameModel model,
                         ((NU2MapData) EditorState.getActiveMap().levelData()).scene().boundingBoxes().get(boundingBoxIndex()).address(),
                         vProp.value().add(boundsDiff2).toLittleEndianByteBuffer());
             }
-            case VectorProperty vProp && propName.equals("Rotation") ->
+            case VectorProperty vProp when propName.equals("Rotation") ->
                     newMatrix = Matrix4f.IDENTITY.translate(iablObj.transform().getTranslation())
                                 .rotate(Quaternionf.createYXZ(vProp.value()))
                                 .scale(iablObj.transform().getScale());
-            case VectorProperty vProp && propName.equals("Scale") ->
+            case VectorProperty vProp when propName.equals("Scale") ->
                     newMatrix = Matrix4f.IDENTITY.translate(iablObj.transform().getTranslation())
                                 .rotate(iablObj.transform().getRotationNormalized())
                                 .scale(vProp.value());
-            case EditorEntityProperty mop && propName.equals("Model") -> {
+            case EditorEntityProperty mop when propName.equals("Model") -> {
                 var object = (GameModel) mop.value();
                 var propAddr = this.fileAddress + 0xb0;
                 var offset = object.modelAddress() - propAddr;
                 MapWriter.applyPatch(MapWriter.WritableObject.SCENE, propAddr, Util.littleEndian(offset));
             }
-            case FloatProperty fProp && propName.equals("Wind speed factor") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, fileAddress + 0xca, Util.littleEndian((char) ((int) (fProp.value() * 65535))));
-            case FloatProperty fProp && propName.equals("Wind shear factor") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, fileAddress + 0xc8, Util.littleEndian((char) ((int) (fProp.value() * 65535))));
+            case FloatProperty fProp when propName.equals("Wind speed factor") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, fileAddress + 0xca, Util.littleEndian((char) ((int) (fProp.value() * 65535))));
+            case FloatProperty fProp when propName.equals("Wind shear factor") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, fileAddress + 0xc8, Util.littleEndian((char) ((int) (fProp.value() * 65535))));
             case null, default -> {
             }
         }

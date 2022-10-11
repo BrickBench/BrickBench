@@ -645,25 +645,25 @@ public class FileMaterial implements DisplayCommandResource<FileMaterial> {
     @Override
     public void applyPropertyEdit(String propName, Property newValue) {
         switch (newValue) {
-            case EditorEntityProperty mp && propName.equals("Diffuse texture") -> {
+            case EditorEntityProperty mp when propName.equals("Diffuse texture") -> {
                 var texture = (FileTexture) mp.value();
                 MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0x74, Util.littleEndian((short) texture.descriptor().trueIndex()));
                 MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x4, Util.littleEndian((int) texture.descriptor().trueIndex()));
             }
-            case EditorEntityProperty mp && propName.equals("Specular texture") -> {
+            case EditorEntityProperty mp when propName.equals("Specular texture") -> {
                 var texture = (FileTexture) mp.value();
                 MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x48, Util.littleEndian((int) texture.descriptor().trueIndex()));
             }
-            case EditorEntityProperty mp && propName.equals("Normal texture") -> {
+            case EditorEntityProperty mp when propName.equals("Normal texture") -> {
                 var texture = (FileTexture) mp.value();
                 MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x4C, Util.littleEndian((int) texture.descriptor().trueIndex()));
             }
-            case FloatProperty fp && propName.equals("Specular exponent") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x7C, Util.littleEndian(fp.value()));
-            case FloatProperty fp && propName.equals("Specular multiplier") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x78, Util.littleEndian(fp.value()));
-            case FloatProperty fp && propName.equals("Fresnel multiplier") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x90, Util.littleEndian(fp.value()));
-            case FloatProperty fp && propName.equals("Fresnel exponent") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x94, Util.littleEndian(fp.value()));
-            case ColorProperty cp && propName.equals("Surface color") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0x54, cp.value().toLittleEndianByteBuffer());
-            case EnumProperty ep && propName.equals("Blending type") -> {
+            case FloatProperty fp when propName.equals("Specular exponent") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x7C, Util.littleEndian(fp.value()));
+            case FloatProperty fp when propName.equals("Specular multiplier") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x78, Util.littleEndian(fp.value()));
+            case FloatProperty fp when propName.equals("Fresnel multiplier") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x90, Util.littleEndian(fp.value()));
+            case FloatProperty fp when propName.equals("Fresnel exponent") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0xB4 + 0x94, Util.littleEndian(fp.value()));
+            case ColorProperty cp when propName.equals("Surface color") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, this.fileAddress + 0x54, cp.value().toLittleEndianByteBuffer());
+            case EnumProperty ep when propName.equals("Blending type") -> {
                 int blendId = switch ((AlphaBlendType) ep.value()) {
                     case NONE -> 0;
                     case TRANSPARENT -> 1;

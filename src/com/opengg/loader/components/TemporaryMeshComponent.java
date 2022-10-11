@@ -101,16 +101,16 @@ public class TemporaryMeshComponent extends EditorEntityRenderComponent implemen
     @Override
     public void applyPropertyEdit(String propName, Property newValue) {
         switch (newValue) {
-            case EditorEntityProperty mop && propName.equals("Model") -> {
+            case EditorEntityProperty mop when propName.equals("Model") -> {
                 var newModel = (GameModel) mop.value();
                 this.currentModel = newModel;
                 this.setRenderable(newModel);
             }
-            case VectorProperty vp && propName.equals("Position") -> this.setPositionOffset(vp.value());
-            case VectorProperty vp && propName.equals("Rotation") -> this.setRotationOffset(vp.value());
-            case VectorProperty vp && propName.equals("Scale") -> this.setScaleOffset(vp.value());
-            case BooleanProperty bp && propName.equals("Terrain") -> makeTerrain = bp.value();
-            case BooleanProperty bp && propName.equals("Scene model") -> makeMesh = bp.value();
+            case VectorProperty vp when propName.equals("Position") -> this.setPositionOffset(vp.value());
+            case VectorProperty vp when propName.equals("Rotation") -> this.setRotationOffset(vp.value());
+            case VectorProperty vp when propName.equals("Scale") -> this.setScaleOffset(vp.value());
+            case BooleanProperty bp when propName.equals("Terrain") -> makeTerrain = bp.value();
+            case BooleanProperty bp when propName.equals("Scene model") -> makeMesh = bp.value();
             case null, default -> {
             }
         }

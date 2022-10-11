@@ -9,10 +9,10 @@ import com.opengg.loader.Util;
 import com.opengg.loader.game.nu2.NU2MapData;
 import com.opengg.loader.game.nu2.scene.blocks.*;
 import com.opengg.loader.loading.MapLoader;
-import jdk.incubator.foreign.MemorySegment;
-import jdk.incubator.foreign.ResourceScope;
 
 import java.io.IOException;
+import java.lang.foreign.MemorySegment;
+import java.lang.foreign.MemorySession;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Comparator;
@@ -133,7 +133,7 @@ public class SceneFileLoader {
 
         var vertexBuffers = mapData.scene().gscVertexBuffers().stream()
                 .map(gameBuf -> {
-                    try (ResourceScope scope = ResourceScope.newConfinedScope()) {
+                    try (var scope = MemorySession.openConfined()) {
                         var segment = MemorySegment.allocateNative(gameBuf.length(), scope);
                         segment.asByteBuffer().put(gameBuf.contents());
                         return GraphicsBuffer.allocate(GraphicsBuffer.BufferType.VERTEX_ARRAY_BUFFER, segment.asByteBuffer(), GraphicsBuffer.UsageType.NONE);
@@ -142,7 +142,7 @@ public class SceneFileLoader {
 
         var indexBuffers = mapData.scene().gscIndexBuffers().stream()
                 .map(gameBuf -> {
-                    try (ResourceScope scope = ResourceScope.newConfinedScope()) {
+                    try (var scope = MemorySession.openConfined()) {
                         var segment = MemorySegment.allocateNative(gameBuf.length(), scope);
                         segment.asByteBuffer().put(gameBuf.contents());
                         return GraphicsBuffer.allocate(GraphicsBuffer.BufferType.ELEMENT_ARRAY_BUFFER, segment.asByteBuffer(), GraphicsBuffer.UsageType.NONE);

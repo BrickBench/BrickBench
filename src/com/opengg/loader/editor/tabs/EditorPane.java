@@ -163,7 +163,7 @@ public class EditorPane extends JPanel implements EditorTab {
                     holder.add(collapse);
                     numNoDefaults++;
                 }
-                case EditorEntity.CustomUIProperty customProp && !customProp.insetInDefault() -> {
+                case EditorEntity.CustomUIProperty customProp when !customProp.insetInDefault() -> {
                     customProp.createNewInterface(holder, gameObject.get());
                     numNoDefaults++;
                 }

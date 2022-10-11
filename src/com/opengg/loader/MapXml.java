@@ -109,7 +109,7 @@ public final class MapXml implements ProjectStructure.Node<MapXml> {
     @Override
     public void applyPropertyEdit(String propName, Property newValue) {
         switch (newValue) {
-            case StringProperty sp && propName.equals("Name") -> {
+            case StringProperty sp when propName.equals("Name") -> {
                 try (var exit = SwingUtil.showLoadingAlert("Renaming...", "Renaming map files...", false)){
                     MapIO.renameMap(EditorState.getProject(), this, sp.value());
                     EditorState.updateProject(EditorState.getProject());

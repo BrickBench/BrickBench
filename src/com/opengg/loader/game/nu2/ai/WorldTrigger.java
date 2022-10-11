@@ -21,8 +21,8 @@ public record WorldTrigger (Vector3f pos, Vector3f size, float angle, String nam
                     case "Size" -> MapWriter.applyPatch(MapWriter.WritableObject.TRIGGER, fileAddress + 16 + 12, vProp.value().toLittleEndianByteBuffer());
                 }
             }
-            case StringProperty sProp && propName.equals("Name") ->  MapWriter.applyPatch(MapWriter.WritableObject.TRIGGER, fileAddress, Util.getStringBytes(sProp.value(), 16));
-            case FloatProperty iProp && propName.equals("Angle") -> MapWriter.applyPatch(MapWriter.WritableObject.TRIGGER, fileAddress + 16 + 12 + 12, Util.littleEndian(Util.floatToShortAngle(iProp.value())));
+            case StringProperty sProp when propName.equals("Name") ->  MapWriter.applyPatch(MapWriter.WritableObject.TRIGGER, fileAddress, Util.getStringBytes(sProp.value(), 16));
+            case FloatProperty iProp when propName.equals("Angle") -> MapWriter.applyPatch(MapWriter.WritableObject.TRIGGER, fileAddress + 16 + 12 + 12, Util.littleEndian(Util.floatToShortAngle(iProp.value())));
 
             case null, default -> {}
         }

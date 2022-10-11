@@ -35,7 +35,7 @@ public record CreatureSpawn(String name, String initialScript, String type, Vect
         var typeSize = ((NU2MapData) EditorState.getActiveMap().levelData()).ai().version().get() < 14 ? 16 : 32;
 
         switch (newValue) {
-            case VectorProperty nVec && "Spawn Location".equals(propName) -> MapWriter.applyPatch(MapWriter.WritableObject.CREATURE_SPAWN, fileAddress + 16 + 16 + typeSize, nVec.value().toLittleEndianByteBuffer());
+            case VectorProperty nVec when "Spawn Location".equals(propName) -> MapWriter.applyPatch(MapWriter.WritableObject.CREATURE_SPAWN, fileAddress + 16 + 16 + typeSize, nVec.value().toLittleEndianByteBuffer());
             case StringProperty sProp -> {
                 switch (propName) {
                     case "Name" -> MapWriter.applyPatch(MapWriter.WritableObject.CREATURE_SPAWN, fileAddress, Util.getStringBytes(sProp.stringValue(), 16));
@@ -43,7 +43,7 @@ public record CreatureSpawn(String name, String initialScript, String type, Vect
                     case "Type" -> MapWriter.applyPatch(MapWriter.WritableObject.CREATURE_SPAWN, fileAddress + 16 + 16, Util.getStringBytes(sProp.stringValue(), typeSize));
                 }
             }
-            case FloatProperty iProp && "Spawn Angle".equals(propName) -> MapWriter.applyPatch(MapWriter.WritableObject.CREATURE_SPAWN, fileAddress + 16 + 16 + typeSize + 12, Util.littleEndian(Util.floatToShortAngle(iProp.value())));
+            case FloatProperty iProp when "Spawn Angle".equals(propName) -> MapWriter.applyPatch(MapWriter.WritableObject.CREATURE_SPAWN, fileAddress + 16 + 16 + typeSize + 12, Util.littleEndian(Util.floatToShortAngle(iProp.value())));
 
             case null, default -> {}
         }

@@ -8,7 +8,7 @@ plugins{
 group 'com.opengg'
 version '0.3.4'
 
-project.ext.javaVersion = 1.18
+project.ext.javaVersion = 1.19
 project.ext.lwjglVersion = "3.3.1"
 
 if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -36,7 +36,7 @@ repositories {
 
 configure(subprojects.findAll {it.name != 'modules'}) {
     apply plugin: 'java'
-    project.ext.javaVersion = 1.18
+    project.ext.javaVersion = 1.19
 
     sourceCompatibility = project.ext.javaVersion
     targetCompatibility = project.ext.javaVersion

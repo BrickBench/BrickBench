@@ -39,15 +39,15 @@ public record ModelInstance (GameModel model, MatrixCommandResource matrix, List
     @Override
     public void applyPropertyEdit(String propName, Property newValue) {
         Matrix4f newMatrix = switch (newValue) {
-            case VectorProperty vProp && propName.equals("Position") ->
+            case VectorProperty vProp when propName.equals("Position") ->
                     Matrix4f.IDENTITY.translate(vProp.value())
                         .rotate(matrix.matrix().getRotationNormalized())
                         .scale(matrix.matrix().getScale());
-            case VectorProperty vProp && propName.equals("Rotation") ->
+            case VectorProperty vProp when propName.equals("Rotation") ->
                     Matrix4f.IDENTITY.translate(matrix.matrix().getTranslation())
                         .rotate(Quaternionf.createYXZ(vProp.value()))
                         .scale(matrix.matrix().getScale());
-            case VectorProperty vProp && propName.equals("Scale") ->
+            case VectorProperty vProp when propName.equals("Scale") ->
                     Matrix4f.IDENTITY.translate(matrix.matrix().getTranslation())
                         .rotate(matrix.matrix().getRotationNormalized())
                         .scale(vProp.value());

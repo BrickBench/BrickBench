@@ -11,11 +11,11 @@ import com.opengg.loader.game.nu2.NU2MapData;
 import com.opengg.loader.game.nu2.scene.GameModel;
 import com.opengg.loader.loading.MapWriter;
 import com.opengg.loader.game.nu2.scene.blocks.SceneExporter;
-import jdk.incubator.foreign.MemorySegment;
-import jdk.incubator.foreign.ResourceScope;
 import org.lwjgl.util.meshoptimizer.MeshOptimizer;
 
 import java.io.*;
+import java.lang.foreign.MemorySegment;
+import java.lang.foreign.MemorySession;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -31,7 +31,7 @@ public class TerrainSerializer {
 
         var newModel = SceneExporter.convertToEngineModel(model, false);
         var blocks = new ArrayList<TerrainGroup.TerrainMeshBlock>();
-        try (var scope = ResourceScope.newConfinedScope()) {
+        try (var scope = MemorySession.openConfined()) {
             for (var mesh : newModel.getMeshes()) {
                 var sections = new ArrayList<TerrainGroup.TerrainMeshFace>();
                 var globalMaxMin = getMaxima(mesh.getVertices().stream()

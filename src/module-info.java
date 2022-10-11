@@ -7,7 +7,6 @@ open module com.opengg.loader {
 
     requires java.desktop;
     requires java.logging;
-    requires jdk.incubator.foreign;
     requires com.formdev.flatlaf.extras;
     requires jdk.crypto.cryptoki;
 

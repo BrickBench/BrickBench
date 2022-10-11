@@ -44,7 +44,7 @@ public record DisplayCommand(int index, int address, int flags, CommandType type
     @Override
     public void applyPropertyEdit(String propName, Property newValue) {
         switch (newValue) {
-            case EnumProperty ep && propName.equals("Command type") -> {
+            case EnumProperty ep when propName.equals("Command type") -> {
                 var objects = EditorState.getNamespace(EditorState.getActiveNamespace());
                 var newResource = switch ((CommandType) ep.value()) {
                     case OTHER, FACEON, DYNAMIC_GEOMETRY, TERMINATE, MTL_CLIP, DUMMY, END, NEXT -> 0;
@@ -82,8 +82,8 @@ public record DisplayCommand(int index, int address, int flags, CommandType type
                             Util.littleEndian(0));
                 }
             }
-            case IntegerProperty ip && propName.equals("Flags") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, address + 1, new byte[]{(byte) ip.value()});
-            case IntegerProperty ip && propName.equals("Resource address") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, address + 4, Util.littleEndian(ip.value() - (address + 4)));
+            case IntegerProperty ip when propName.equals("Flags") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, address + 1, new byte[]{(byte) ip.value()});
+            case IntegerProperty ip when propName.equals("Resource address") -> MapWriter.applyPatch(MapWriter.WritableObject.SCENE, address + 4, Util.littleEndian(ip.value() - (address + 4)));
             case null, default -> {
             }
         }

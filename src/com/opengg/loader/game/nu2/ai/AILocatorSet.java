@@ -15,7 +15,7 @@ public record AILocatorSet(String name, List<AILocator> locators, int fileAddres
     @Override
     public void applyPropertyEdit(String propName, Property newValue) {
         switch (newValue) {
-            case StringProperty sp && sp.name().equals("Name") -> MapWriter.applyPatch(MapWriter.WritableObject.AI_LOCATOR, fileAddress, Util.getStringBytes(sp.value(), 16));
+            case StringProperty sp when sp.name().equals("Name") -> MapWriter.applyPatch(MapWriter.WritableObject.AI_LOCATOR, fileAddress, Util.getStringBytes(sp.value(), 16));
             default -> {}
         }
     }
