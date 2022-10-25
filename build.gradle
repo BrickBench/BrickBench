@@ -36,7 +36,6 @@ repositories {
     maven {url 'https://oss.jfrog.org/artifactory/oss-snapshot-local'}
     maven {url 'https://oss.sonatype.org/content/repositories/snapshots/'}
     maven {url 'https://maven.nikr.net/'}
-    maven {url 'https://jitpack.io'}
     maven {
         url'https://maven.pkg.github.com/OpenGGEngine/OpenGG-Project'
         credentials {
